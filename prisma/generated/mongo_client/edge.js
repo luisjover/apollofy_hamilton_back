@@ -113,7 +113,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/alihourag/Documents/workspace/AIT/module-3/back_prueba_ali/prisma/generated/mongo_client",
+      "value": "C:\\Users\\Ivan\\workspace\\apollofy_hamilton_back\\prisma\\generated\\mongo_client",
       "fromEnvVar": null
     },
     "config": {
@@ -122,7 +122,7 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "windows",
         "native": true
       }
     ],
@@ -140,7 +140,6 @@ const config = {
     "db"
   ],
   "activeProvider": "mongodb",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -149,9 +148,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "Ly8gVGhpcyBpcyB5b3VyIFByaXNtYSBzY2hlbWEgZmlsZSwKLy8gbGVhcm4gbW9yZSBhYm91dCBpdCBpbiB0aGUgZG9jczogaHR0cHM6Ly9wcmlzLmx5L2QvcHJpc21hLXNjaGVtYQoKZ2VuZXJhdG9yIGNsaWVudCB7CiAgcHJvdmlkZXIgPSAicHJpc21hLWNsaWVudC1qcyIKICBvdXRwdXQgICA9ICIuL2dlbmVyYXRlZC9tb25nb19jbGllbnQiCn0KCmRhdGFzb3VyY2UgZGIgewogIHByb3ZpZGVyID0gIm1vbmdvZGIiCiAgdXJsICAgICAgPSBlbnYoIk1PTkdPREJfVVJMIikKfQoKbW9kZWwgVXNlcnMgewogIGlkICAgICAgICBTdHJpbmcgICBAaWQgQGRlZmF1bHQoYXV0bygpKSBAbWFwKCJfaWQiKSBAZGIuT2JqZWN0SWQKICB1c2VyTmFtZSAgU3RyaW5nCiAgZW1haWwgICAgIFN0cmluZwogIGltYWdlVXJsICBTdHJpbmc/CiAgY3JlYXRlZEF0IERhdGVUaW1lIEBkZWZhdWx0KG5vdygpKQogIHVwZGF0ZWRBdCBEYXRlVGltZSBAdXBkYXRlZEF0Cn0K",
-  "inlineSchemaHash": "0f477e94c677341971079068ea2474152afcac8d8f332da707b93963b835fffb",
-  "noEngine": false
+  "inlineSchema": "Ly8gVGhpcyBpcyB5b3VyIFByaXNtYSBzY2hlbWEgZmlsZSwNCi8vIGxlYXJuIG1vcmUgYWJvdXQgaXQgaW4gdGhlIGRvY3M6IGh0dHBzOi8vcHJpcy5seS9kL3ByaXNtYS1zY2hlbWENCg0KZ2VuZXJhdG9yIGNsaWVudCB7DQogIHByb3ZpZGVyID0gInByaXNtYS1jbGllbnQtanMiDQogIG91dHB1dCAgID0gIi4vZ2VuZXJhdGVkL21vbmdvX2NsaWVudCINCn0NCg0KZGF0YXNvdXJjZSBkYiB7DQogIHByb3ZpZGVyID0gIm1vbmdvZGIiDQogIHVybCAgICAgID0gZW52KCJNT05HT0RCX1VSTCIpDQp9DQoNCm1vZGVsIFVzZXJzIHsNCiAgaWQgICAgICAgIFN0cmluZyAgIEBpZCBAZGVmYXVsdChhdXRvKCkpIEBtYXAoIl9pZCIpIEBkYi5PYmplY3RJZA0KICB1c2VyTmFtZSAgU3RyaW5nDQogIGVtYWlsICAgICBTdHJpbmcNCiAgaW1hZ2VVcmwgIFN0cmluZz8NCiAgY3JlYXRlZEF0IERhdGVUaW1lIEBkZWZhdWx0KG5vdygpKQ0KICB1cGRhdGVkQXQgRGF0ZVRpbWUgQHVwZGF0ZWRBdA0KfQ0K",
+  "inlineSchemaHash": "f481b581e21338b0226ebdb915fa66d59c6cbccd34a6f3fc66c8aa2cabaab121"
 }
 config.dirname = '/'
 

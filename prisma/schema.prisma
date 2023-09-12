@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "./generated/mongo_client"
+  // output   = "./generated/mongo_client"
 }
 
 datasource db {
@@ -11,11 +11,103 @@ datasource db {
   url      = env("MONGODB_URL")
 }
 
+//libraList es un array de strings que solo contiene los ids de albums, artists o playList
 model Users {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userName  String
-  email     String
-  imageUrl  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  userName    String
+  email       String      @unique
+  imageUrl    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  trackList   Tracks[]
+  libraryList String[]
+  usersId     String?     @db.ObjectId
+  PlayList    PlayLists[]
+
+  Followers   Followers? @relation(fields: [followersId], references: [id])
+  followersId String?    @db.ObjectId
+  Following   Following? @relation(fields: [followingId], references: [id])
+  followingId String?    @db.ObjectId
+}
+
+model Followers {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String  @unique
+  followers Users[]
+}
+
+model Following {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String  @unique
+  following Users[]
+}
+
+model Artists {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  genres     String[]
+  imageUrl   String
+  popularity Int
+  albumsId   String[] @db.ObjectId
+  albums     Albums[] @relation(fields: [albumsId], references: [id])
+  listType   String
+  Tracks     Tracks?  @relation(fields: [tracksId], references: [id])
+  tracksId   String?  @db.ObjectId
+  artistId   String
+}
+
+model Albums {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  genres     String[]
+  imageUrl   String
+  popularity Int
+  artistId   String[]  @db.ObjectId
+  artists    Artists[] @relation(fields: [artistId], references: [id])
+  tracks     Tracks[]
+  listType   String
+}
+
+model PlayLists {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  imageUrl    String
+  tracks      Tracks[]
+  description String
+  owner       Users    @relation(fields: [usersId], references: [id])
+  private     Boolean
+  listType    String
+  createdAt   DateTime
+  updatedAt   DateTime
+  usersId     String   @db.ObjectId
+}
+
+model Genres {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  imageUrl String
+  tracksId String[] @db.ObjectId
+  tracks   Tracks[] @relation(fields: [tracksId], references: [id])
+  color    String
+}
+
+model Tracks {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  imageUrl   String
+  artists    Artists[]
+  likes      Int
+  genresId   String[]   @db.ObjectId
+  genres     Genres[]   @relation(fields: [genresId], references: [id])
+  audioUrl   String
+  verified   Boolean
+  duration   Int
+  imageId    String
+  audioId    String
+  Users      Users?     @relation(fields: [usersId], references: [id])
+  usersId    String?    @db.ObjectId
+  Albums     Albums?    @relation(fields: [albumsId], references: [id])
+  albumsId   String?    @db.ObjectId
+  PlayList   PlayLists? @relation(fields: [playListId], references: [id])
+  playListId String?    @db.ObjectId
 }
