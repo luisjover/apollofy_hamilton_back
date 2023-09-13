@@ -12,21 +12,29 @@ datasource db {
 
 //libraList es un array de strings que solo contiene los ids de albums, artists o playList
 model Users {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
   userName    String
-  email       String      @unique
+  email       String       @unique
   imageUrl    String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   trackList   Tracks[]
-  libraryList String[]
-  usersId     String?     @db.ObjectId
+  favourites  Favourites[]
+  usersId     String?      @db.ObjectId
   PlayList    PlayLists[]
+  Followers   Followers?   @relation(fields: [followersId], references: [id])
+  followersId String?      @db.ObjectId
+  Following   Following?   @relation(fields: [followingId], references: [id])
+  followingId String?      @db.ObjectId
+}
 
-  Followers   Followers? @relation(fields: [followersId], references: [id])
-  followersId String?    @db.ObjectId
-  Following   Following? @relation(fields: [followingId], references: [id])
-  followingId String?    @db.ObjectId
+model Favourites {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  artist    Artists?
+  album     Albums?
+  playlists PlayLists?
+  Users     Users?     @relation(fields: [usersId], references: [id])
+  usersId   String?    @db.ObjectId
 }
 
 model Followers {
@@ -42,43 +50,49 @@ model Following {
 }
 
 model Artists {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  name       String
-  genres     String[]
-  imageUrl   String
-  popularity Int
-  albumsId   String[] @db.ObjectId
-  albums     Albums[] @relation(fields: [albumsId], references: [id])
-  listType   String
-  Tracks     Tracks?  @relation(fields: [tracksId], references: [id])
-  tracksId   String?  @db.ObjectId
-  artistId   String
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  genres       String[]
+  imageUrl     String
+  popularity   Int
+  albumsId     String[]   @db.ObjectId
+  albums       Albums[]   @relation(fields: [albumsId], references: [id])
+  listType     String
+  Tracks       Tracks?    @relation(fields: [tracksId], references: [id])
+  tracksId     String?    @db.ObjectId
+  artistId     String
+  favourites   Favourites @relation(fields: [favouritesId], references: [id])
+  favouritesId String     @unique @db.ObjectId
 }
 
 model Albums {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  name       String
-  genres     String[]
-  imageUrl   String
-  popularity Int
-  artistId   String[]  @db.ObjectId
-  artists    Artists[] @relation(fields: [artistId], references: [id])
-  tracks     Tracks[]
-  listType   String
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  genres       String[]
+  imageUrl     String
+  popularity   Int
+  artistId     String[]   @db.ObjectId
+  artists      Artists[]  @relation(fields: [artistId], references: [id])
+  tracks       Tracks[]
+  listType     String
+  favourites   Favourites @relation(fields: [favouritesId], references: [id])
+  favouritesId String     @unique @db.ObjectId
 }
 
 model PlayLists {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  imageUrl    String
-  tracks      Tracks[]
-  description String
-  owner       Users    @relation(fields: [usersId], references: [id])
-  private     Boolean
-  listType    String
-  createdAt   DateTime
-  updatedAt   DateTime
-  usersId     String   @db.ObjectId
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  imageUrl     String
+  tracks       Tracks[]
+  description  String
+  owner        Users       @relation(fields: [usersId], references: [id])
+  privacity    Boolean
+  listType     String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  usersId      String      @db.ObjectId
+  favourites   Favourites? @relation(fields: [favouritesId], references: [id])
+  favouritesId String?     @unique @db.ObjectId
 }
 
 model Genres {
@@ -100,7 +114,7 @@ model Tracks {
   genres     Genres[]   @relation(fields: [genresId], references: [id])
   audioUrl   String
   verified   Boolean
-  duration   Int
+  duration   Int?
   imageId    String
   audioId    String
   Users      Users?     @relation(fields: [usersId], references: [id])

@@ -1,18 +1,20 @@
 import express from 'express';
+import fileUpload from 'express-fileupload';
+import morgan from 'morgan';
+import cors from 'cors'
 
-// var cors = require("cors");
 //Create an express application
 const app = express();
 
-// app.use(cors());
+app.use(cors());
 // Middleware to be able to read incoming requests
 app.use(express.json());
-// Middleware to get info about requests 
-// app.use(morgan("dev"))
-// app.use(fileUpload({
-//     useTempFiles: true,
-//     tempFileDir: "./uploads"
-// }))
+// Middleware to get info about requests
+app.use(morgan("dev"))
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: "./uploads"
+}))
 // Set different routes
 // app.use("/users", UsersRouter);
 

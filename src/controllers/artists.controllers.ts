@@ -3,7 +3,15 @@ import prismaClient from "../db/clientPrisma";
 
 
 export const createArtist = async (req: Request, res: Response) => { }
-export const getAllArtists = async (req: Request, res: Response) => { }
+export const getAllArtists = async (req: Request, res: Response) => {
+    try {
+        const artists = await prismaClient.artists.findMany();
+
+        res.status(200).send(artists)
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
 export const getArtist = async (req: Request, res: Response) => {
     const { artistId } = req.params;
 
