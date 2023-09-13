@@ -10,14 +10,15 @@ cloudinary.config({
 
 export const uploadTrack = async (path: string) => {
     return await cloudinary.uploader.upload(path, {
-        folder: 'tracks'
+        folder: 'tracks',
+        resource_type: "video"
     })
 }
-export const uploadCover = async (path: string) => {
+export const uploadCover = async (path: any) => {
     return await cloudinary.uploader.upload(path, {
         folder: 'covers'
     })
 }
-export const deleteMedia = async (publicId: string) => {
+export const deleteMedia = async (publicId: any) => {
     return await cloudinary.uploader.destroy(publicId)
 }

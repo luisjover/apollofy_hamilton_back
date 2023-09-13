@@ -17,7 +17,7 @@ export const createTrack = async (req: Request, res: Response) => {
         }
 
         if (!Array.isArray(genres)) {
-            genres = [...genres]
+            genres = genres.split(',').map((genre: string) => genre.trim());
         }
 
         if (!name || !genres) {
@@ -26,13 +26,13 @@ export const createTrack = async (req: Request, res: Response) => {
         }
         const genresIdArr = [];
         for (const genreName of genres) {
-            const genreId = await prismaClient.genres.findFirst({
+            const genre = await prismaClient.genres.findFirst({
                 where: {
                     name: genreName
                 }
             })
-            if (genreId) {
-                genresIdArr.push(genreId);
+            if (genre) {
+                genresIdArr.push(genre.id);
             }
         }
 
@@ -40,7 +40,7 @@ export const createTrack = async (req: Request, res: Response) => {
 
             console.log(req.files?.audio)
             const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
-            const uploadedAudio = await uploadTrack((req.files as any).audio);
+            const uploadedAudio = await uploadTrack((req.files as any).audio.tempFilePath);
 
             console.log("cover" + uploadedCover)
             console.log("track" + uploadedAudio)
@@ -52,7 +52,7 @@ export const createTrack = async (req: Request, res: Response) => {
                 data: {
                     name: name,
                     genres: {
-                        connect: genresIdArr.map(genresId => ({ id: genresId.id })),
+                        connect: genresIdArr.map(genresId => ({ id: genresId })),
                     },
                     imageUrl: uploadedCover.secure_url,
                     imageId: uploadedCover.public_id,
@@ -62,9 +62,9 @@ export const createTrack = async (req: Request, res: Response) => {
                     verified: false,
                 }
             })
-            res.status(200).send(newTrack)
+            return res.status(200).send(newTrack)
         }
-        res.status(404).send('Missing files')
+        else res.status(404).send('Missing files')
     } catch (error) {
         res.status(500).send(error);
         console.log(error)
