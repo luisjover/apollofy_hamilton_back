@@ -6,14 +6,22 @@ import fs from 'fs-extra'
 
 export const createTrack = async (req: Request, res: Response) => {
     try {
+
         const { userId } = req.params;
-        const { name, genres } = req.body;
+        let { name, genres } = req.body;
+
+
 
         if (!userId) {
             res.status(404).send('User not found');
         }
 
+        if (!Array.isArray(genres)) {
+            genres = [...genres]
+        }
+
         if (!name || !genres) {
+
             res.status(404).send('Missing required data');
         }
         const genresIdArr = [];
@@ -29,8 +37,13 @@ export const createTrack = async (req: Request, res: Response) => {
         }
 
         if ((req.files as any)?.image && (req.files as any)?.audio) {
+
+            console.log(req.files?.audio)
             const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
-            const uploadedAudio = await uploadTrack((req.files as any).audio.tempFilePath);
+            const uploadedAudio = await uploadTrack((req.files as any).audio);
+
+            console.log("cover" + uploadedCover)
+            console.log("track" + uploadedAudio)
 
             await fs.unlink((req.files as any).image.tempFilePath)
             await fs.unlink((req.files as any).audio.tempFilePath)
@@ -54,6 +67,7 @@ export const createTrack = async (req: Request, res: Response) => {
         res.status(404).send('Missing files')
     } catch (error) {
         res.status(500).send(error);
+        console.log(error)
     }
 }
 export const getAllTracks = async (req: Request, res: Response) => {

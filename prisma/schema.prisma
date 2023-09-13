@@ -98,10 +98,10 @@ model PlayLists {
 model Genres {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
   name     String
-  imageUrl String
+  imageUrl String?
   tracksId String[] @db.ObjectId
   tracks   Tracks[] @relation(fields: [tracksId], references: [id])
-  color    String
+  color    String?
 }
 
 model Tracks {

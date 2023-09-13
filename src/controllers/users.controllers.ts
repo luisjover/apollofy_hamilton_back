@@ -5,6 +5,7 @@ import prismaClient from "../db/clientPrisma";
 
 
 export const createUser = async (req: Request, res: Response) => {
+
     const { userName, email, imageUrl } = req.body;
 
     try {

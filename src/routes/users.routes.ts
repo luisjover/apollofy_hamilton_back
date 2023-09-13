@@ -1,14 +1,14 @@
 import { Router } from 'express';
-import { createUser, deleteUser, getAllUsers, updateUser } from '../controllers/users.controllers';
+import { createUser, deleteUser, getAllUsers, getUser, updateUser } from '../controllers/users.controllers';
 
 
-const UsersRouter: Router = Router();
+const usersRouter: Router = Router();
 
-UsersRouter
+usersRouter
     .post("/", createUser)
     .get("/", getAllUsers)
-    .get("/:userEmail", getAllUsers)
-    .put("/:userEmail", updateUser)
-    .delete("/:userEmail", deleteUser)
+    .get("/:userId", getUser)
+    .put("/:userId", updateUser)
+    .delete("/:userId", deleteUser)
 
-export default UsersRouter;
+export default usersRouter;

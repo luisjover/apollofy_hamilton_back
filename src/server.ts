@@ -2,6 +2,10 @@ import express from 'express';
 import fileUpload from 'express-fileupload';
 import morgan from 'morgan';
 import cors from 'cors'
+import usersRouter from './routes/users.routes';
+import tracksRouter from './routes/tracks.routes';
+import playListsRouter from './routes/playlists.routes';
+import genresRouter from './routes/genres.routes';
 
 //Create an express application
 const app = express();
@@ -15,7 +19,10 @@ app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: "./uploads"
 }))
-// Set different routes
-// app.use("/users", UsersRouter);
+
+app.use("/users", usersRouter);
+app.use("/tracks", tracksRouter);
+app.use("/playlists", playListsRouter);
+app.use("/genres", genresRouter);
 
 export default app;

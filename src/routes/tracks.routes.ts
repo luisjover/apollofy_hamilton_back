@@ -4,7 +4,7 @@ import { createTrack, deleteTrack, getAllTracks, getTrack, updateTrack } from '.
 const tracksRouter: Router = Router();
 
 tracksRouter
-    .post("/", createTrack)
+    .post("/:userId", createTrack)
     .get("/", getAllTracks)
     .get("/:trackId", getTrack)
     .put("/:trackId", updateTrack)

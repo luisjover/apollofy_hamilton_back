@@ -1,12 +1,10 @@
 import { Router } from 'express'
+import { createGenre } from '../controllers/genres.controllers';
 
 const genresRouter: Router = Router();
 
 genresRouter
     .post("/", createGenre)
-    .get("/", getAllGenres)
-    .get("/:genreId", getGenre)
-    .put("/:genreId", updateGenre)
-    .delete("/:genreId", deleteGenre)
+
 
 export default genresRouter
