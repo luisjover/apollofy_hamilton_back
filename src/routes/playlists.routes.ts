@@ -4,7 +4,7 @@ import { createPlayList, deletePlayList, getAllPlayLists, getPlayList, updatePla
 const playListsRouter: Router = Router();
 
 playListsRouter
-    .post("/userId", createPlayList)
+    .post("/:userId", createPlayList)
     .get("/", getAllPlayLists)
     .get("/:playListId", getPlayList)
     .put("/:playListId", updatePlayList)
