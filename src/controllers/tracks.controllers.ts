@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
-import { uploadCover, uploadTrack, deleteMedia } from "../utils/cloudinary";
+import { uploadCover, uploadTrack, deleteImageMedia, deleteAudioMedia } from "../utils/cloudinary";
 import fs from 'fs-extra'
 
 
@@ -38,12 +38,8 @@ export const createTrack = async (req: Request, res: Response) => {
 
         if ((req.files as any)?.image && (req.files as any)?.audio) {
 
-            console.log(req.files?.audio)
             const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
             const uploadedAudio = await uploadTrack((req.files as any).audio.tempFilePath);
-
-            console.log("cover" + uploadedCover)
-            console.log("track" + uploadedAudio)
 
             await fs.unlink((req.files as any).image.tempFilePath)
             await fs.unlink((req.files as any).audio.tempFilePath)
@@ -67,7 +63,6 @@ export const createTrack = async (req: Request, res: Response) => {
         else res.status(404).send('Missing files')
     } catch (error) {
         res.status(500).send(error);
-        console.log(error)
     }
 }
 export const getAllTracks = async (req: Request, res: Response) => {
@@ -111,10 +106,11 @@ export const deleteTrack = async (req: Request, res: Response) => {
         })
         if (!targetTrack) {
             res.status(404).send('Track not found')
+            return;
         }
 
-        await deleteMedia(targetTrack.audioId);
-        await deleteMedia(targetTrack.imageId);
+        await deleteAudioMedia(targetTrack.audioId);
+        await deleteImageMedia(targetTrack.imageId);
         res.status(200).send('Track deleted successfully')
     } catch (error) {
         res.status(500).send(error)

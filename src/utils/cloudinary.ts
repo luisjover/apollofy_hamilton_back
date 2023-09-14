@@ -19,6 +19,21 @@ export const uploadCover = async (path: any) => {
         folder: 'covers'
     })
 }
-export const deleteMedia = async (publicId: any) => {
-    return await cloudinary.uploader.destroy(publicId)
+export const deleteAudioMedia = async (publicId: any) => {
+
+    const result = await cloudinary.uploader.destroy(publicId, {
+
+        resource_type: "video"
+    });
+
+    return result;
+
+
+}
+
+export const deleteImageMedia = async (publicId: any) => {
+
+    const result = await cloudinary.uploader.destroy(publicId);
+    return result;
+
 }
