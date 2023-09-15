@@ -55,17 +55,17 @@ model Artists {
 }
 
 model Albums {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
   name         String
   genres       String[]
   imageUrl     String
   popularity   Int
-  artistId     String[]   @db.ObjectId
-  artists      Artists[]  @relation(fields: [artistId], references: [id])
+  artistId     String[]    @db.ObjectId
+  artists      Artists[]   @relation(fields: [artistId], references: [id])
   tracks       Tracks[]
   listType     String
-  favourites   Favourites @relation(fields: [favouritesId], references: [id])
-  favouritesId String     @unique @db.ObjectId
+  favourites   Favourites? @relation(fields: [favouritesId], references: [id])
+  favouritesId String?     @unique @db.ObjectId
 }
 
 model PlayLists {
@@ -107,10 +107,10 @@ model Tracks {
   duration   Int?
   imageId    String
   audioId    String
+  album      Albums?    @relation(fields: [albumsId], references: [id])
+  albumsId   String?    @db.ObjectId
   Users      Users?     @relation(fields: [usersId], references: [id])
   usersId    String?    @db.ObjectId
-  Albums     Albums?    @relation(fields: [albumsId], references: [id])
-  albumsId   String?    @db.ObjectId
   PlayList   PlayLists? @relation(fields: [playListId], references: [id])
   playListId String?    @db.ObjectId
 }

@@ -43,6 +43,16 @@ export const createTrack = async (req: Request, res: Response) => {
 
             await fs.unlink((req.files as any).image.tempFilePath)
             await fs.unlink((req.files as any).audio.tempFilePath)
+            const imageUrl = uploadedCover.secure_url;
+            const newAlbum = await prismaClient.albums.create({
+                data: {
+                    name,
+                    genres,
+                    imageUrl,
+                    popularity: 0,
+                    listType: "album"
+                }
+            })
 
             const newTrack = await prismaClient.tracks.create({
                 data: {
@@ -55,7 +65,12 @@ export const createTrack = async (req: Request, res: Response) => {
                             id: userId
                         }
                     },
-                    imageUrl: uploadedCover.secure_url,
+                    album: {
+                        connect: {
+                            id: newAlbum.id
+                        }
+                    },
+                    imageUrl,
                     imageId: uploadedCover.public_id,
                     audioUrl: uploadedAudio.secure_url,
                     audioId: uploadedAudio.public_id,
