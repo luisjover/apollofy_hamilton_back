@@ -8,7 +8,7 @@ export const createTrack = async (req: Request, res: Response) => {
     try {
 
         const { userId } = req.params;
-        let { name, genres } = req.body;
+        let { name, genres, privacity } = req.body;
 
 
 
@@ -50,12 +50,18 @@ export const createTrack = async (req: Request, res: Response) => {
                     genres: {
                         connect: genresIdArr.map(genresId => ({ id: genresId })),
                     },
+                    Users: {
+                        connect: {
+                            id: userId
+                        }
+                    },
                     imageUrl: uploadedCover.secure_url,
                     imageId: uploadedCover.public_id,
                     audioUrl: uploadedAudio.secure_url,
                     audioId: uploadedAudio.public_id,
                     likes: 0,
                     verified: false,
+                    privacity: privacity
                 }
             })
             return res.status(200).send(newTrack)

@@ -114,6 +114,7 @@ model Tracks {
   genres     Genres[]   @relation(fields: [genresId], references: [id])
   audioUrl   String
   verified   Boolean
+  privacity  Boolean
   duration   Int?
   imageId    String
   audioId    String
