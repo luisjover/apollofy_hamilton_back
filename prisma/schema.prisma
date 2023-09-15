@@ -12,20 +12,21 @@ datasource db {
 
 //libraList es un array de strings que solo contiene los ids de albums, artists o playList
 model Users {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  userName    String
-  email       String       @unique
-  imageUrl    String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  trackList   Tracks[]
-  favourites  Favourites[]
-  usersId     String?      @db.ObjectId
-  PlayList    PlayLists[]
-  Followers   Followers?   @relation(fields: [followersId], references: [id])
-  followersId String?      @db.ObjectId
-  Following   Following?   @relation(fields: [followingId], references: [id])
-  followingId String?      @db.ObjectId
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  userName     String
+  email        String       @unique
+  imageUrl     String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  trackList    Tracks[]
+  favourites   Favourites[]
+  usersId      String?      @db.ObjectId
+  playList     PlayLists[]
+  type         String
+  followers    Users[]      @relation("UserFollows", fields: [followersIds], references: [id])
+  followersIds String[]     @db.ObjectId
+  following    Users[]      @relation("UserFollows", fields: [followingIds], references: [id])
+  followingIds String[]     @db.ObjectId
 }
 
 model Favourites {
@@ -35,18 +36,6 @@ model Favourites {
   playlists PlayLists?
   Users     Users?     @relation(fields: [usersId], references: [id])
   usersId   String?    @db.ObjectId
-}
-
-model Followers {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String  @unique
-  followers Users[]
-}
-
-model Following {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String  @unique
-  following Users[]
 }
 
 model Artists {

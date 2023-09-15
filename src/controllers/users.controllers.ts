@@ -16,11 +16,26 @@ export const createUser = async (req: Request, res: Response) => {
 
 
         const newUser = await prismaClient.users.create({
-            data: { userName, email, imageUrl }
+            data: {
+                userName: userName,
+                email: email,
+                imageUrl: imageUrl,
+                type: "user"
+            }
         });
+        const user = await prismaClient.users.findFirst({
+            where: {
+                id: newUser.id
+            },
+            include: {
+                trackList: true,
+                followers: true,
+                following: true,
+                playList: true,
+            }
+        })
 
-
-        res.status(200).send(newUser)
+        res.status(200).send(user)
 
     } catch (error) {
         res.status(500).send(error)
