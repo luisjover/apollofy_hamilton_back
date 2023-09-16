@@ -43,16 +43,16 @@ model Artists {
   name         String
   genres       String[]
   imageUrl     String
+  imageId      String
   popularity   Int
   albumsId     String[]    @db.ObjectId
   albums       Albums[]    @relation(fields: [albumsId], references: [id])
   listType     String
   Tracks       Tracks?     @relation(fields: [tracksId], references: [id])
   tracksId     String?     @db.ObjectId
-  artistId     String
   isTopTrend   Boolean
-  favourites   Favourites  @relation(fields: [favouritesId], references: [id])
-  favouritesId String      @unique @db.ObjectId
+  favourites   Favourites? @relation(fields: [favouritesId], references: [id])
+  favouritesId String?     @unique @db.ObjectId
   TopArtists   TopArtists? @relation(fields: [topArtistsId], references: [id])
   topArtistsId String?     @db.ObjectId
 }

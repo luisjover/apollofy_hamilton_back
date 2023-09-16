@@ -15,6 +15,8 @@ export const createPlayList = async (req: Request, res: Response) => {
             res.status(404).send('Missing required data');
         }
 
+
+
         const newPlaylist = await prismaClient.playLists.create({
             data: {
                 name: name,
@@ -23,6 +25,7 @@ export const createPlayList = async (req: Request, res: Response) => {
                 listType: listType,
                 privacity: privacity,
                 usersId: userId,
+                isTopTrend: false
             }
         })
         res.status(200).send(newPlaylist)

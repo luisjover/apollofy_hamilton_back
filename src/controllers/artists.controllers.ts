@@ -1,8 +1,39 @@
 import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
+import { uploadCover } from "../utils/cloudinary";
+import fs from 'fs-extra'
 
 
-export const createArtist = async (req: Request, res: Response) => { }
+export const createArtistByAdmin = async (req: Request, res: Response) => {
+    const { name, genres, popularity, isTopTrend } = req.body;
+    try {
+        if ((req.files as any)?.image && (req.files as any)?.audio) {
+
+            const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
+            await fs.unlink((req.files as any).image.tempFilePath)
+            const imageUrl = uploadedCover.secure_url;
+            const imageId = uploadedCover.public_id;
+
+            let topTrend: boolean;
+            isTopTrend === "true" ? topTrend = true : topTrend = false;
+
+            const newArtist = await prismaClient.artists.create({
+                data: {
+                    name,
+                    genres,
+                    popularity,
+                    isTopTrend: topTrend,
+                    imageUrl,
+                    imageId,
+                    listType: "artist"
+                }
+            })
+        }
+
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
 export const getAllArtists = async (req: Request, res: Response) => {
     try {
         const artists = await prismaClient.artists.findMany();

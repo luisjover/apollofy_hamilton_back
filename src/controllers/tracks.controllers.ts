@@ -50,7 +50,8 @@ export const createTrack = async (req: Request, res: Response) => {
                     genres,
                     imageUrl,
                     popularity: 0,
-                    listType: "album"
+                    listType: "album",
+                    isTopTrend: false
                 }
             })
 

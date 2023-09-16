@@ -1,7 +1,21 @@
 import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
 
-export const createAlbum = async (req: Request, res: Response) => { }
+// export const createAlbumByAdmin = async (req: Request, res: Response) => { 
+//     const {name, genres, popularity, artists, isTopTrends} = req.body;
+//     try{
+//         const newAlbum = await prismaClient.albums.create({
+//             data: {
+
+//             }
+//         })
+
+//     } catch(error) {
+//         res.status(500).send(error)
+//     }
+// }
+
+
 export const getAllAlbums = async (req: Request, res: Response) => {
     try {
         const albums = await prismaClient.albums.findMany();
@@ -11,6 +25,8 @@ export const getAllAlbums = async (req: Request, res: Response) => {
         res.status(500).send(error);
     }
 }
+
+
 export const getAlbum = async (req: Request, res: Response) => {
     const { albumId } = req.params;
 
