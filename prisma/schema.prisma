@@ -75,7 +75,9 @@ model PlayLists {
   id           String      @id @default(auto()) @map("_id") @db.ObjectId
   name         String
   imageUrl     String
-  tracks       Tracks[]
+  imageId      String
+  tracks       Tracks[]    @relation(fields: [tracksIds], references: [id])
+  tracksIds    String[]    @db.ObjectId
   description  String
   owner        Users       @relation(fields: [usersId], references: [id])
   privacity    Boolean
@@ -102,23 +104,23 @@ model Genres {
 }
 
 model Tracks {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
-  name       String
-  imageUrl   String
-  artists    Artists[]
-  likes      Int
-  genresId   String[]   @db.ObjectId
-  genres     Genres[]   @relation(fields: [genresId], references: [id])
-  audioUrl   String
-  verified   Boolean
-  privacity  Boolean
-  duration   Int?
-  imageId    String
-  audioId    String
-  album      Albums?    @relation(fields: [albumsId], references: [id])
-  albumsId   String?    @db.ObjectId
-  Users      Users?     @relation(fields: [usersId], references: [id])
-  usersId    String?    @db.ObjectId
-  PlayList   PlayLists? @relation(fields: [playListId], references: [id])
-  playListId String?    @db.ObjectId
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  imageUrl    String
+  artists     Artists[]
+  likes       Int
+  genresId    String[]    @db.ObjectId
+  genres      Genres[]    @relation(fields: [genresId], references: [id])
+  audioUrl    String
+  verified    Boolean
+  privacity   Boolean
+  duration    Int?
+  imageId     String
+  audioId     String
+  album       Albums?     @relation(fields: [albumsId], references: [id])
+  albumsId    String?     @db.ObjectId
+  Users       Users?      @relation(fields: [usersId], references: [id])
+  usersId     String?     @db.ObjectId
+  playLists   PlayLists[] @relation(fields: [playListIds], references: [id])
+  playListIds String[]    @db.ObjectId
 }

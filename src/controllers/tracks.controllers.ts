@@ -95,11 +95,15 @@ export const createTrack = async (req: Request, res: Response) => {
 
 export const createTrackByAdmin = async (req: Request, res: Response) => {
     try {
-        let { name, genres, albumName } = req.body;
+        let { name, genres, albumName, playLists } = req.body;
 
 
         if (!Array.isArray(genres)) {
             genres = genres.split(',').map((genre: string) => genre.trim());
+        }
+
+        if (!Array.isArray(playLists)) {
+            playLists = playLists.split(',').map((playList: string) => playList.trim());
         }
 
         if (!name || !genres) {
@@ -115,6 +119,18 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
             })
             if (genre) {
                 genresIdArr.push(genre.id);
+            }
+        }
+
+        const playListsIdArr = [];
+        for (const playListId of playLists) {
+            const playList = await prismaClient.playLists.findFirst({
+                where: {
+                    id: playListId
+                }
+            })
+            if (playList) {
+                playListsIdArr.push(playList.id);
             }
         }
 
@@ -159,7 +175,10 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
                     audioId,
                     likes: 0,
                     verified: true,
-                    privacity: false
+                    privacity: false,
+                    playLists: {
+                        connect: playListsIdArr.map(playListId => ({ id: playListId }))
+                    }
                 }
             })
             return res.status(200).send(newTrack)

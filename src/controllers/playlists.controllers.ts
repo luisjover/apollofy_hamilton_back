@@ -1,35 +1,41 @@
 import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
-
+import { uploadCover } from "../utils/cloudinary";
+import fs from 'fs-extra'
 
 export const createPlayListsByAdmin = async (req: Request, res: Response) => {
     try {
-        const { userId } = req.params;
-        const { name, imageUrl, description, privacity, listType, isTopTrend } = req.body;
+        const { name, description, privacity, listType, isTopTrend } = req.body;
 
-        if (!userId) {
-            res.status(404).send('User not found');
-        }
 
-        if (!name || !imageUrl || !description || !privacity || !listType) {
+        if (!name || !description || !privacity || !listType) {
             res.status(404).send('Missing required data');
         }
 
-        let topTrend: boolean;
-        isTopTrend === "true" ? topTrend = true : topTrend = false;
+        if ((req.files as any)?.image) {
 
-        const newPlaylist = await prismaClient.playLists.create({
-            data: {
-                name: name,
-                imageUrl: imageUrl,
-                description: description,
-                listType: listType,
-                privacity: privacity,
-                usersId: userId,
-                isTopTrend: topTrend
-            }
-        })
-        res.status(200).send(newPlaylist)
+            const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
+            await fs.unlink((req.files as any).image.tempFilePath)
+            const imageUrl = uploadedCover.secure_url;
+            const imageId = uploadedCover.public_id;
+
+            let topTrend: boolean;
+            isTopTrend === "true" ? topTrend = true : topTrend = false;
+
+            const newPlaylist = await prismaClient.playLists.create({
+                data: {
+                    name: name,
+                    imageUrl,
+                    imageId,
+                    description: description,
+                    listType: listType,
+                    privacity: privacity,
+                    usersId: "completar con el id del admin",
+                    isTopTrend: topTrend
+                }
+            })
+            res.status(200).send(newPlaylist)
+        }
     } catch (error) {
         res.status(500).send(error);
     }
@@ -38,30 +44,35 @@ export const createPlayListsByAdmin = async (req: Request, res: Response) => {
 export const createPlayList = async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
-        const { name, imageUrl, description, privacity, listType } = req.body;
+        const { name, description, privacity, listType } = req.body;
 
         if (!userId) {
             res.status(404).send('User not found');
         }
 
-        if (!name || !imageUrl || !description || !privacity || !listType) {
+        if (!name || !description || !privacity || !listType) {
             res.status(404).send('Missing required data');
         }
 
-
-
-        const newPlaylist = await prismaClient.playLists.create({
-            data: {
-                name: name,
-                imageUrl: imageUrl,
-                description: description,
-                listType: listType,
-                privacity: privacity,
-                usersId: userId,
-                isTopTrend: false
-            }
-        })
-        res.status(200).send(newPlaylist)
+        if ((req.files as any)?.image) {
+            const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
+            await fs.unlink((req.files as any).image.tempFilePath)
+            const imageUrl = uploadedCover.secure_url;
+            const imageId = uploadedCover.public_id;
+            const newPlaylist = await prismaClient.playLists.create({
+                data: {
+                    name: name,
+                    imageUrl,
+                    imageId,
+                    description: description,
+                    listType: listType,
+                    privacity: privacity,
+                    usersId: userId,
+                    isTopTrend: false
+                }
+            })
+            res.status(200).send(newPlaylist)
+        }
     } catch (error) {
         res.status(500).send(error);
     }
