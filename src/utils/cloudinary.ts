@@ -16,7 +16,8 @@ export const uploadTrack = async (path: string) => {
 }
 export const uploadCover = async (path: any) => {
     return await cloudinary.uploader.upload(path, {
-        folder: 'covers'
+        folder: 'covers',
+        transformation: [{ height: 250, width: 250, crop: "fill" }]
     })
 }
 export const deleteAudioMedia = async (publicId: any) => {
