@@ -39,19 +39,22 @@ model Favourites {
 }
 
 model Artists {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
   name         String
   genres       String[]
   imageUrl     String
   popularity   Int
-  albumsId     String[]   @db.ObjectId
-  albums       Albums[]   @relation(fields: [albumsId], references: [id])
+  albumsId     String[]    @db.ObjectId
+  albums       Albums[]    @relation(fields: [albumsId], references: [id])
   listType     String
-  Tracks       Tracks?    @relation(fields: [tracksId], references: [id])
-  tracksId     String?    @db.ObjectId
+  Tracks       Tracks?     @relation(fields: [tracksId], references: [id])
+  tracksId     String?     @db.ObjectId
   artistId     String
-  favourites   Favourites @relation(fields: [favouritesId], references: [id])
-  favouritesId String     @unique @db.ObjectId
+  isTopTrend   Boolean
+  favourites   Favourites  @relation(fields: [favouritesId], references: [id])
+  favouritesId String      @unique @db.ObjectId
+  TopArtists   TopArtists? @relation(fields: [topArtistsId], references: [id])
+  topArtistsId String?     @db.ObjectId
 }
 
 model Albums {
@@ -64,24 +67,30 @@ model Albums {
   artists      Artists[]   @relation(fields: [artistId], references: [id])
   tracks       Tracks[]
   listType     String
+  isTopTrend   Boolean
   favourites   Favourites? @relation(fields: [favouritesId], references: [id])
   favouritesId String?     @unique @db.ObjectId
+  TopAlbums    TopAlbums?  @relation(fields: [topAlbumsId], references: [id])
+  topAlbumsId  String?     @db.ObjectId
 }
 
 model PlayLists {
-  id           String      @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  imageUrl     String
-  tracks       Tracks[]
-  description  String
-  owner        Users       @relation(fields: [usersId], references: [id])
-  privacity    Boolean
-  listType     String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  usersId      String      @db.ObjectId
-  favourites   Favourites? @relation(fields: [favouritesId], references: [id])
-  favouritesId String?     @unique @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  imageUrl       String
+  tracks         Tracks[]
+  description    String
+  owner          Users         @relation(fields: [usersId], references: [id])
+  privacity      Boolean
+  listType       String
+  isTopTrend     Boolean
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  usersId        String        @db.ObjectId
+  favourites     Favourites?   @relation(fields: [favouritesId], references: [id])
+  favouritesId   String?       @unique @db.ObjectId
+  TopPlaylists   TopPlaylists? @relation(fields: [topPlaylistsId], references: [id])
+  topPlaylistsId String?       @db.ObjectId
 }
 
 model Genres {
@@ -113,4 +122,19 @@ model Tracks {
   usersId    String?    @db.ObjectId
   PlayList   PlayLists? @relation(fields: [playListId], references: [id])
   playListId String?    @db.ObjectId
+}
+
+model TopArtists {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  topArtists Artists[]
+}
+
+model TopAlbums {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  topAlbums Albums[]
+}
+
+model TopPlaylists {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  topPLaylists PlayLists[]
 }
