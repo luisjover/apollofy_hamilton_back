@@ -6,9 +6,8 @@ import usersRouter from './routes/users.routes';
 import tracksRouter from './routes/tracks.routes';
 import playListsRouter from './routes/playlists.routes';
 import genresRouter from './routes/genres.routes';
-import topArtistsRouter from './routes/topArtists.routes';
-import topAlbumsRouter from './routes/topAlbums.routes';
-import topPlaylistsRouter from './routes/topPlaylists.routes';
+import artistsRouter from './routes/artists.routes';
+import albumsRouter from './routes/albums.routes';
 
 //Create an express application
 const app = express();
@@ -25,10 +24,10 @@ app.use(fileUpload({
 
 app.use("/users", usersRouter);
 app.use("/tracks", tracksRouter);
+app.use("/artists", artistsRouter);
 app.use("/playlists", playListsRouter);
+app.use("/albums", albumsRouter);
 app.use("/genres", genresRouter);
-app.use("/topArtists", topArtistsRouter);
-app.use("/topAlbums", topAlbumsRouter);
-app.use("/topPlaylists", topPlaylistsRouter);
+
 
 export default app;

@@ -1,11 +1,12 @@
 import { Router } from 'express'
-import { createAlbum, deleteAlbum, getAlbum, getAllAlbums, updateAlbum } from '../controllers/albums.controllers';
+import { createAlbumByAdmin, deleteAlbum, getAlbum, getAllAlbums, getTopAlbums, updateAlbum } from '../controllers/albums.controllers';
 
 const albumsRouter: Router = Router();
 
 albumsRouter
-    .post("/", createAlbum)
+    .post("/", createAlbumByAdmin)
     .get("/", getAllAlbums)
+    .get("/topAlbums", getTopAlbums)
     .get("/:albumId", getAlbum)
     .put("/:albumId", updateAlbum)
     .delete("/:albumId", deleteAlbum)

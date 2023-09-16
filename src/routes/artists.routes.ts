@@ -1,11 +1,12 @@
 import { Router } from 'express'
-import { createArtist, deleteArtist, getAllArtists, getArtist, updateArtist } from '../controllers/artists.controllers';
+import { createArtistByAdmin, deleteArtist, getAllArtists, getArtist, getTopArtists, updateArtist } from '../controllers/artists.controllers';
 
 const artistsRouter: Router = Router();
 
 artistsRouter
-    .post("/", createArtist)
+    .post("/", createArtistByAdmin)
     .get("/", getAllArtists)
+    .get("/topArtists", getTopArtists)
     .get("/:artistId", getArtist)
     .put("/:artistId", updateArtist)
     .delete("/:artistId", deleteArtist)

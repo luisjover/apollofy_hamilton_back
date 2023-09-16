@@ -46,12 +46,28 @@ export const createArtistByAdmin = async (req: Request, res: Response) => {
                     listType: "artist"
                 }
             })
+
+            res.status(201).send(newArtist);
         }
 
     } catch (error) {
         res.status(500).send(error)
     }
 }
+
+export const getTopArtists = async (req: Request, res: Response) => {
+    try {
+        const topArtists = await prismaClient.artists.findFirst({
+            where: {
+                isTopTrend: true
+            }
+        })
+        res.status(200).send(topArtists);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+
 export const getAllArtists = async (req: Request, res: Response) => {
     try {
         const artists = await prismaClient.artists.findMany();

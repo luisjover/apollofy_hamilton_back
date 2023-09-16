@@ -42,6 +42,8 @@ export const createAlbumByAdmin = async (req: Request, res: Response) => {
             await fs.unlink((req.files as any).image.tempFilePath)
             const imageUrl = uploadedCover.secure_url;
             const imageId = uploadedCover.public_id;
+            let topTrend: boolean;
+            isTopTrend === "true" ? topTrend = true : topTrend = false;
             const newAlbum = await prismaClient.albums.create({
                 data: {
                     name,
@@ -53,7 +55,7 @@ export const createAlbumByAdmin = async (req: Request, res: Response) => {
                         connect: artistsIdsArr.map(artistId => ({ id: artistId }))
                     },
                     listType: "album",
-                    isTopTrend,
+                    isTopTrend: topTrend,
                     imageUrl,
                     imageId
                 }
@@ -65,6 +67,18 @@ export const createAlbumByAdmin = async (req: Request, res: Response) => {
     }
 }
 
+export const getTopAlbums = async (req: Request, res: Response) => {
+    try {
+        const topAlbums = await prismaClient.albums.findFirst({
+            where: {
+                isTopTrend: true
+            }
+        })
+        res.status(200).send(topAlbums)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
 
 export const getAllAlbums = async (req: Request, res: Response) => {
     try {
