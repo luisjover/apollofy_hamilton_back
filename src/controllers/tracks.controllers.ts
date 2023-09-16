@@ -44,17 +44,21 @@ export const createTrack = async (req: Request, res: Response) => {
             await fs.unlink((req.files as any).image.tempFilePath)
             await fs.unlink((req.files as any).audio.tempFilePath)
             const imageUrl = uploadedCover.secure_url;
+            const imageId = uploadedCover.public_id;
+
             const newAlbum = await prismaClient.albums.create({
                 data: {
                     name,
                     genres,
                     imageUrl,
+                    imageId,
                     popularity: 0,
                     listType: "album",
                     isTopTrend: false
                 }
             })
-
+            const audioUrl = uploadedAudio.secure_url;
+            const audioId = uploadedAudio.public_id;
             const newTrack = await prismaClient.tracks.create({
                 data: {
                     name: name,
@@ -72,9 +76,9 @@ export const createTrack = async (req: Request, res: Response) => {
                         }
                     },
                     imageUrl,
-                    imageId: uploadedCover.public_id,
-                    audioUrl: uploadedAudio.secure_url,
-                    audioId: uploadedAudio.public_id,
+                    imageId,
+                    audioUrl,
+                    audioId,
                     likes: 0,
                     verified: false,
                     privacity: privacity
@@ -87,6 +91,86 @@ export const createTrack = async (req: Request, res: Response) => {
         res.status(500).send(error);
     }
 }
+
+
+export const createTrackByAdmin = async (req: Request, res: Response) => {
+    try {
+        let { name, genres, albumName } = req.body;
+
+
+        if (!Array.isArray(genres)) {
+            genres = genres.split(',').map((genre: string) => genre.trim());
+        }
+
+        if (!name || !genres) {
+
+            res.status(404).send('Missing required data');
+        }
+        const genresIdArr = [];
+        for (const genreName of genres) {
+            const genre = await prismaClient.genres.findFirst({
+                where: {
+                    name: genreName
+                }
+            })
+            if (genre) {
+                genresIdArr.push(genre.id);
+            }
+        }
+
+        const album = await prismaClient.albums.findFirst({
+            where: {
+                name: albumName
+            }
+        })
+
+        if ((req.files as any)?.image && (req.files as any)?.audio && album) {
+
+            const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
+            const uploadedAudio = await uploadTrack((req.files as any).audio.tempFilePath);
+
+            await fs.unlink((req.files as any).image.tempFilePath)
+            await fs.unlink((req.files as any).audio.tempFilePath)
+
+            const imageUrl = uploadedCover.secure_url;
+            const imageId = uploadedCover.public_id;
+
+            const audioUrl = uploadedAudio.secure_url;
+            const audioId = uploadedAudio.public_id;
+            const newTrack = await prismaClient.tracks.create({
+                data: {
+                    name: name,
+                    genres: {
+                        connect: genresIdArr.map(genresId => ({ id: genresId })),
+                    },
+                    Users: {
+                        connect: {
+                            id: "completar con el id del admin"
+                        }
+                    },
+                    album: {
+                        connect: {
+                            id: album.id
+                        }
+                    },
+                    imageUrl,
+                    imageId,
+                    audioUrl,
+                    audioId,
+                    likes: 0,
+                    verified: true,
+                    privacity: false
+                }
+            })
+            return res.status(200).send(newTrack)
+        }
+        else res.status(404).send('Missing files')
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+
+
 export const getAllTracks = async (req: Request, res: Response) => {
     try {
         const tracks = await prismaClient.tracks.findMany();

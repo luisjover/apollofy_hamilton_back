@@ -5,7 +5,7 @@ import fs from 'fs-extra'
 
 
 export const createArtistByAdmin = async (req: Request, res: Response) => {
-    const { name, genres, popularity, isTopTrend } = req.body;
+    let { name, genres, popularity, isTopTrend } = req.body;
     try {
         if ((req.files as any)?.image && (req.files as any)?.audio) {
 
@@ -14,13 +14,31 @@ export const createArtistByAdmin = async (req: Request, res: Response) => {
             const imageUrl = uploadedCover.secure_url;
             const imageId = uploadedCover.public_id;
 
+            if (!Array.isArray(genres)) {
+                genres = genres.split(',').map((genre: string) => genre.trim());
+            }
+
+            const genresIdArr = [];
+            for (const genreName of genres) {
+                const genre = await prismaClient.genres.findFirst({
+                    where: {
+                        name: genreName
+                    }
+                })
+                if (genre) {
+                    genresIdArr.push(genre.id);
+                }
+            }
+
             let topTrend: boolean;
             isTopTrend === "true" ? topTrend = true : topTrend = false;
 
             const newArtist = await prismaClient.artists.create({
                 data: {
                     name,
-                    genres,
+                    genres: {
+                        connect: genresIdArr.map(genreId => ({ id: genreId }))
+                    },
                     popularity,
                     isTopTrend: topTrend,
                     imageUrl,

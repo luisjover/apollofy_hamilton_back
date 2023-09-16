@@ -1,19 +1,69 @@
 import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
+import { uploadCover } from "../utils/cloudinary";
+import fs from 'fs-extra'
 
-// export const createAlbumByAdmin = async (req: Request, res: Response) => { 
-//     const {name, genres, popularity, artists, isTopTrends} = req.body;
-//     try{
-//         const newAlbum = await prismaClient.albums.create({
-//             data: {
+export const createAlbumByAdmin = async (req: Request, res: Response) => {
+    let { name, genres, popularity, artistsNames, isTopTrend } = req.body;
+    try {
+        if (!Array.isArray(artistsNames)) {
+            artistsNames = artistsNames.split(',').map((artistId: string) => artistId.trim());
+        }
 
-//             }
-//         })
+        const artistsIdsArr = [];
+        for (const artistName of artistsNames) {
+            const artist = await prismaClient.artists.findFirst({
+                where: {
+                    name: artistName
+                }
+            })
+            if (artistName && artist) {
+                artistsIdsArr.push(artist.id);
+            }
+        }
+        if (!Array.isArray(genres)) {
+            genres = genres.split(',').map((genre: string) => genre.trim());
+        }
 
-//     } catch(error) {
-//         res.status(500).send(error)
-//     }
-// }
+        const genresIdArr = [];
+        for (const genreName of genres) {
+            const genre = await prismaClient.genres.findFirst({
+                where: {
+                    name: genreName
+                }
+            })
+            if (genre) {
+                genresIdArr.push(genre.id);
+            }
+        }
+        if ((req.files as any)?.image) {
+
+            const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
+            await fs.unlink((req.files as any).image.tempFilePath)
+            const imageUrl = uploadedCover.secure_url;
+            const imageId = uploadedCover.public_id;
+            const newAlbum = await prismaClient.albums.create({
+                data: {
+                    name,
+                    genres: {
+                        connect: genresIdArr.map(genreId => ({ id: genreId }))
+                    },
+                    popularity,
+                    artists: {
+                        connect: artistsIdsArr.map(artistId => ({ id: artistId }))
+                    },
+                    listType: "album",
+                    isTopTrend,
+                    imageUrl,
+                    imageId
+                }
+            })
+            res.status(201).send(newAlbum);
+        }
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
 
 
 export const getAllAlbums = async (req: Request, res: Response) => {
