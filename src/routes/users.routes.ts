@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createUser, deleteUser, getAllUsers, getUser, updateUser } from '../controllers/users.controllers';
+import { createUser, deleteUser, getAllUsers, getUserByEmail, getUserById, updateUser } from '../controllers/users.controllers';
 
 
 const usersRouter: Router = Router();
@@ -7,7 +7,8 @@ const usersRouter: Router = Router();
 usersRouter
     .post("/", createUser)
     .get("/", getAllUsers)
-    .get("/:userId", getUser)
+    .get("/:userId", getUserById)
+    .get("/:userEmail", getUserByEmail)
     .put("/:userId", updateUser)
     .delete("/:userId", deleteUser)
 

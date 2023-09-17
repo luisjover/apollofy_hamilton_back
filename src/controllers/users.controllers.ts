@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
 
-
-
-
 export const createUser = async (req: Request, res: Response) => {
 
     const { userName, email, imageUrl } = req.body;
@@ -42,6 +39,8 @@ export const createUser = async (req: Request, res: Response) => {
         res.status(500).send(error)
     }
 }
+//----------------------------------------------------------------------------
+
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
         const users = await prismaClient.users.findMany();
@@ -52,7 +51,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
         res.status(500).send(error);
     }
 }
-export const getUser = async (req: Request, res: Response) => {
+//----------------------------------------------------------------------------
+export const getUserById = async (req: Request, res: Response) => {
     const { userId } = req.params;
 
     try {
@@ -75,7 +75,33 @@ export const getUser = async (req: Request, res: Response) => {
         res.status(500).send(error)
     }
 }
+//----------------------------------------------------------------------------
+export const getUserByEmail = async (req: Request, res: Response) => {
+    const { userEmail } = req.params;
+
+    try {
+        const user = await prismaClient.users.findFirst({
+            where: {
+                email: userEmail
+            },
+            include: {
+                trackList: true
+            }
+        });
+
+        if (!user) {
+            res.status(404).send({ error: "User not found" })
+            return
+        }
+        res.status(200).send(user)
+
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
+//----------------------------------------------------------------------------
 export const updateUser = async (req: Request, res: Response) => { }
+//----------------------------------------------------------------------------
 export const deleteUser = async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
