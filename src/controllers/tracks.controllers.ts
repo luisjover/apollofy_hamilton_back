@@ -5,11 +5,12 @@ import fs from 'fs-extra'
 
 
 export const createTrack = async (req: Request, res: Response) => {
+    let imageId: string | null = null;
+    let audioId: string | null = null;
     try {
 
         const { userId } = req.params;
-        let { name, genres, privacity } = req.body;
-
+        let { name, genres, privacityString } = req.body;
 
 
         if (!userId) {
@@ -44,12 +45,14 @@ export const createTrack = async (req: Request, res: Response) => {
             await fs.unlink((req.files as any).image.tempFilePath)
             await fs.unlink((req.files as any).audio.tempFilePath)
             const imageUrl = uploadedCover.secure_url;
-            const imageId = uploadedCover.public_id;
+            imageId = uploadedCover.public_id;
 
             const newAlbum = await prismaClient.albums.create({
                 data: {
                     name,
-                    genres,
+                    genres: {
+                        connect: genresIdArr.map(genresId => ({ id: genresId })),
+                    },
                     imageUrl,
                     imageId,
                     popularity: 0,
@@ -58,7 +61,10 @@ export const createTrack = async (req: Request, res: Response) => {
                 }
             })
             const audioUrl = uploadedAudio.secure_url;
-            const audioId = uploadedAudio.public_id;
+            audioId = uploadedAudio.public_id;
+            let privacity: boolean;
+            if (privacityString === "true") privacity = true
+            else privacity = false
             const newTrack = await prismaClient.tracks.create({
                 data: {
                     name: name,
@@ -86,8 +92,15 @@ export const createTrack = async (req: Request, res: Response) => {
             })
             return res.status(200).send(newTrack)
         }
-        else res.status(404).send('Missing files')
+        else {
+            if (imageId) deleteImageMedia(imageId);
+            if (audioId) deleteAudioMedia(audioId);
+            res.status(404).send('Missing files');
+        }
     } catch (error) {
+        if (imageId) deleteImageMedia(imageId);
+        if (audioId) deleteAudioMedia(audioId);
+
         res.status(500).send(error);
     }
 }

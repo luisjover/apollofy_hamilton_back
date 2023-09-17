@@ -38,6 +38,7 @@ export const createUser = async (req: Request, res: Response) => {
         res.status(200).send(user)
 
     } catch (error) {
+        console.log(error);
         res.status(500).send(error)
     }
 }
@@ -47,6 +48,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
         res.status(200).send(users)
     } catch (error) {
+        console.log(error);
         res.status(500).send(error);
     }
 }

@@ -6,7 +6,7 @@ const artistsRouter: Router = Router();
 artistsRouter
     .post("/", createArtistByAdmin)
     .get("/", getAllArtists)
-    .get("/topArtists", getTopArtists)
+    .get("/top", getTopArtists)
     .get("/:artistId", getArtist)
     .put("/:artistId", updateArtist)
     .delete("/:artistId", deleteArtist)

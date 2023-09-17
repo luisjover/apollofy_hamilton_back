@@ -5,10 +5,10 @@ import fs from 'fs-extra'
 
 export const createPlayListsByAdmin = async (req: Request, res: Response) => {
     try {
-        const { name, description, privacity, listType, isTopTrend } = req.body;
+        const { name, description, privacity, isTopTrend } = req.body;
 
 
-        if (!name || !description || !privacity || !listType) {
+        if (!name || !description || !privacity) {
             res.status(404).send('Missing required data');
         }
 
@@ -28,7 +28,7 @@ export const createPlayListsByAdmin = async (req: Request, res: Response) => {
                     imageUrl,
                     imageId,
                     description: description,
-                    listType: listType,
+                    listType: "playlist",
                     privacity: privacity,
                     usersId: "completar con el id del admin",
                     isTopTrend: topTrend

@@ -6,7 +6,7 @@ const albumsRouter: Router = Router();
 albumsRouter
     .post("/", createAlbumByAdmin)
     .get("/", getAllAlbums)
-    .get("/topAlbums", getTopAlbums)
+    .get("/top", getTopAlbums)
     .get("/:albumId", getAlbum)
     .put("/:albumId", updateAlbum)
     .delete("/:albumId", deleteAlbum)
