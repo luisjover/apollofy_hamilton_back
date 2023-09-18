@@ -48,7 +48,14 @@ export const getAllUsers = async (req: Request, res: Response) => {
                 playLists: true,
                 followers: true,
                 following: true,
-                favourites: true
+                favourites: {
+                    include: {
+                        album: true,
+                        artist: true,
+                        playlist: true,
+                        track: true
+                    }
+                }
             }
         });
 
@@ -72,7 +79,14 @@ export const getUserById = async (req: Request, res: Response) => {
                 playLists: true,
                 followers: true,
                 following: true,
-                favourites: true
+                favourites: {
+                    include: {
+                        album: true,
+                        artist: true,
+                        playlist: true,
+                        track: true
+                    }
+                }
             }
         });
 

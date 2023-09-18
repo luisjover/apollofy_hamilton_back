@@ -27,6 +27,7 @@ export const createFavourites = async (req: Request, res: Response) => {
                     listType
                 }
             })
+            res.status(201).send(favourite)
         } else if (listType === "album") {
             const albumToAdd = await prismaClient.albums.findUnique({
                 where: {
@@ -48,6 +49,7 @@ export const createFavourites = async (req: Request, res: Response) => {
                     listType
                 }
             })
+            res.status(201).send(favourite)
         } else if (listType === "playlist") {
             const playlistToAdd = await prismaClient.playLists.findUnique({
                 where: {
@@ -69,8 +71,33 @@ export const createFavourites = async (req: Request, res: Response) => {
                     listType
                 }
             })
+            res.status(201).send(favourite)
+        } else if (listType === "track") {
+            const trackToAdd = await prismaClient.tracks.findUnique({
+                where: {
+                    id: listTypeId
+                }
+            })
+            favourite = await prismaClient.favourites.create({
+                data: {
+                    user: {
+                        connect: {
+                            id: userId
+                        }
+                    },
+                    track: {
+                        connect: {
+                            id: trackToAdd?.id
+                        }
+                    },
+                    listType
+                }
+            })
+            res.status(201).send(favourite)
+        } else {
+            res.status(404).send("Favourite not added.")
         }
-        res.status(201).send(favourite)
+
     } catch (error) {
         res.status(500).send(error)
     }
@@ -84,6 +111,7 @@ export const deleteFavourites = async (req: Request, res: Response) => {
                 id: favouriteId
             }
         })
+        res.status(204).send("Favourite item deleted successfully!")
     } catch (error) {
         res.status(500).send(error)
     }
