@@ -141,7 +141,7 @@ export const updateUserFollowingById = async (req: Request, res: Response) => {
                 }
             })
             res.status(201).send(user)
-        } else {
+        } else if (action === "unfollow" && followingUser) {
             const user = await prismaClient.users.update({
                 where: {
                     id: userId
