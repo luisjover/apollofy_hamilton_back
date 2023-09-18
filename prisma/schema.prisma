@@ -22,7 +22,7 @@ model Users {
   favourites   Favourites[]
   usersId      String?      @db.ObjectId
   playLists    PlayLists[]
-  type         String
+  listType     String
   followers    Users[]      @relation("UserFollows", fields: [followersIds], references: [id])
   followersIds String[]     @db.ObjectId
   following    Users[]      @relation("UserFollows", fields: [followingIds], references: [id])
@@ -36,6 +36,7 @@ model Favourites {
   playlists PlayLists?
   Users     Users?     @relation(fields: [usersId], references: [id])
   usersId   String?    @db.ObjectId
+  listType  String
 }
 
 model Artists {
@@ -125,4 +126,5 @@ model Tracks {
   usersId     String?     @db.ObjectId
   playLists   PlayLists[] @relation(fields: [playListIds], references: [id])
   playListIds String[]    @db.ObjectId
+  listType    String
 }

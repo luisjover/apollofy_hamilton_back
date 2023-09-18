@@ -17,7 +17,7 @@ export const createUser = async (req: Request, res: Response) => {
                 userName: userName,
                 email: email,
                 imageUrl: imageUrl,
-                type: "user"
+                listType: "user"
             }
         });
         const user = await prismaClient.users.findFirst({

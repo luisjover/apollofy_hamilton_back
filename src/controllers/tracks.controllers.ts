@@ -107,7 +107,8 @@ export const createTrack = async (req: Request, res: Response) => {
                     privacity: privacity,
                     playLists: {
                         connect: playListsIdArr.map(playListId => ({ id: playListId }))
-                    }
+                    },
+                    listType: "track"
                 }
             })
             return res.status(200).send(newTrack)
@@ -209,7 +210,8 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
                     privacity: false,
                     playLists: {
                         connect: playListsIdArr.map(playListId => ({ id: playListId }))
-                    }
+                    },
+                    listType: "track"
                 }
             })
             return res.status(200).send(newTrack)
