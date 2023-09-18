@@ -129,7 +129,7 @@ export const createTrack = async (req: Request, res: Response) => {
 
 export const createTrackByAdmin = async (req: Request, res: Response) => {
     try {
-        let { name, genres, albumName, playlists } = req.body;
+        let { name, genres, albumName, playlists, artistsNames } = req.body;
 
         if (!name || !genres || !albumName) {
 
@@ -137,6 +137,9 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
         }
         if (!Array.isArray(genres)) {
             genres = genres.split(',').map((genre: string) => genre.trim());
+        }
+        if (!Array.isArray(artistsNames)) {
+            artistsNames = artistsNames.split(',').map((artistName: string) => artistName.trim());
         }
         let playlistsIdArr = [];
         if (playlists && !Array.isArray(playlists)) {
@@ -168,6 +171,17 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
             }
         }
 
+        const artistsIdsArr = [];
+        for (const artistName of artistsNames) {
+            const artist = await prismaClient.artists.findUnique({
+                where: {
+                    name: artistName
+                }
+            })
+            if (artist) {
+                artistsIdsArr.push(artist.id)
+            }
+        }
 
 
         const album = await prismaClient.albums.findFirst({
@@ -215,7 +229,10 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
                     playLists: {
                         connect: playlistsIdArr.map(playlistId => ({ id: playlistId }))
                     },
-                    listType: "track"
+                    listType: "track",
+                    artists: {
+                        connect: artistsIdsArr.map(artistId => ({ id: artistId }))
+                    }
                 }
             })
             return res.status(200).send(newTrack)
