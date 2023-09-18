@@ -106,6 +106,10 @@ export const getAlbum = async (req: Request, res: Response) => {
         const album = await prismaClient.albums.findFirst({
             where: {
                 id: albumId
+            },
+            include: {
+                artists: true,
+                tracks: true
             }
         });
 
