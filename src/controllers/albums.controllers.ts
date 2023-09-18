@@ -69,7 +69,7 @@ export const createAlbumByAdmin = async (req: Request, res: Response) => {
 
 export const getTopAlbums = async (req: Request, res: Response) => {
     try {
-        const topAlbums = await prismaClient.albums.findFirst({
+        const topAlbums = await prismaClient.albums.findMany({
             where: {
                 isTopTrend: true
             }

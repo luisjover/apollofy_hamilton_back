@@ -57,7 +57,7 @@ export const createArtistByAdmin = async (req: Request, res: Response) => {
 
 export const getTopArtists = async (req: Request, res: Response) => {
     try {
-        const topArtists = await prismaClient.artists.findFirst({
+        const topArtists = await prismaClient.artists.findMany({
             where: {
                 isTopTrend: true
             }

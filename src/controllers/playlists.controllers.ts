@@ -80,7 +80,7 @@ export const createPlayList = async (req: Request, res: Response) => {
 
 export const getTopPlaylists = async (req: Request, res: Response) => {
     try {
-        const topPlaylists = await prismaClient.playLists.findFirst({
+        const topPlaylists = await prismaClient.playLists.findMany({
             where: {
                 isTopTrend: true
             }
