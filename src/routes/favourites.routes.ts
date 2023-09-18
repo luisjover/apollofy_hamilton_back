@@ -3,7 +3,7 @@ import { createFavourites, deleteFavourites } from "../controllers/favourites.co
 
 
 
-const favouritesRouter: Router = Router();
+export const favouritesRouter: Router = Router();
 
 favouritesRouter.post("/:userId", createFavourites)
     .delete("/:favouriteId", deleteFavourites)
