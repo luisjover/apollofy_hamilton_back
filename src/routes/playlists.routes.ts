@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { createPlayList, createPlayListsByAdmin, deletePlayList, getAllPlayLists, getPlayList, getTopPlaylists, updatePlayList } from '../controllers/playlists.controllers';
+import { createPlayList, createPlayListsByAdmin, deletePlayListById, getAllPlayLists, getPlayList, getTopPlaylists, getUserPlaylistsById, updatePlayList } from '../controllers/playlists.controllers';
 
 const playListsRouter: Router = Router();
 
@@ -11,7 +11,8 @@ playListsRouter
     .get("/", getAllPlayLists)
     .get("/top", getTopPlaylists)
     .get("/:playListId", getPlayList)
+    .get("/:userId", getUserPlaylistsById)
     .put("/:playListId", updatePlayList)
-    .delete("/:playListId", deletePlayList)
+    .delete("/:playListId", deletePlayListById)
 
 export default playListsRouter

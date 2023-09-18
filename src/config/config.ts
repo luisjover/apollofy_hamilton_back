@@ -28,6 +28,8 @@ type AppConfig = {
     PORT: string | number;
 }
 
+export const adminIdentifier = process.env.ADMIN_ID;
+
 //SET DEVELOPMENT ENVIRONMENT
 // if the process.env.NODE_ENV is undefined then it will be set to development
 if (process.env.NODE_ENV == "production") {

@@ -21,7 +21,7 @@ model Users {
   trackList    Tracks[]
   favourites   Favourites[]
   usersId      String?      @db.ObjectId
-  playList     PlayLists[]
+  playLists    PlayLists[]
   type         String
   followers    Users[]      @relation("UserFollows", fields: [followersIds], references: [id])
   followersIds String[]     @db.ObjectId
@@ -92,8 +92,9 @@ model PlayLists {
 
 model Genres {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  imageUrl  String?
+  name      String   @unique
+  imageUrl  String
+  imageId   String
   tracksId  String[] @db.ObjectId
   tracks    Tracks[] @relation(fields: [tracksId], references: [id])
   color     String?
@@ -101,6 +102,7 @@ model Genres {
   artistsId String?  @db.ObjectId
   Albums    Albums?  @relation(fields: [albumsId], references: [id])
   albumsId  String?  @db.ObjectId
+  listType  String
 }
 
 model Tracks {

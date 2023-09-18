@@ -10,7 +10,7 @@ export const createTrack = async (req: Request, res: Response) => {
     try {
 
         const { userId } = req.params;
-        let { name, genres, privacityString } = req.body;
+        let { name, genres, privacityString, playlists } = req.body;
 
 
         if (!userId) {
@@ -19,6 +19,10 @@ export const createTrack = async (req: Request, res: Response) => {
 
         if (!Array.isArray(genres)) {
             genres = genres.split(',').map((genre: string) => genre.trim());
+        }
+
+        if (!Array.isArray(playlists)) {
+            playlists = playlists.split(',').map((playList: string) => playList.trim());
         }
 
         if (!name || !genres) {
@@ -34,6 +38,28 @@ export const createTrack = async (req: Request, res: Response) => {
             })
             if (genre) {
                 genresIdArr.push(genre.id);
+            }
+        }
+        // get current userPLaylists
+        const user = await prismaClient.users.findFirst({
+            where: {
+                id: userId
+            },
+            include: {
+                playLists: true
+            }
+        })
+        const userPlaylists = user?.playLists
+        //Get playlist Ids after checkind their existence
+        const playListsIdArr = [];
+        for (const playListId of playlists) {
+            const playList = await prismaClient.playLists.findFirst({
+                where: {
+                    id: playListId
+                }
+            })
+            if (playList && userPlaylists?.includes(playListId)) {
+                playListsIdArr.push(playList.id);
             }
         }
 
@@ -87,14 +113,15 @@ export const createTrack = async (req: Request, res: Response) => {
                     audioId,
                     likes: 0,
                     verified: false,
-                    privacity: privacity
+                    privacity: privacity,
+                    playLists: {
+                        connect: playListsIdArr.map(playListId => ({ id: playListId }))
+                    }
                 }
             })
             return res.status(200).send(newTrack)
         }
         else {
-            if (imageId) deleteImageMedia(imageId);
-            if (audioId) deleteAudioMedia(audioId);
             res.status(404).send('Missing files');
         }
     } catch (error) {

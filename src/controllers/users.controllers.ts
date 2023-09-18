@@ -28,7 +28,7 @@ export const createUser = async (req: Request, res: Response) => {
                 trackList: true,
                 followers: true,
                 following: true,
-                playList: true,
+                playLists: true,
             }
         })
 
@@ -43,7 +43,11 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
-        const users = await prismaClient.users.findMany();
+        const users = await prismaClient.users.findMany({
+            include: {
+                playLists: true
+            }
+        });
 
         res.status(200).send(users)
     } catch (error) {
@@ -61,7 +65,8 @@ export const getUserById = async (req: Request, res: Response) => {
                 id: userId
             },
             include: {
-                trackList: true
+                trackList: true,
+                playLists: true
             }
         });
 
@@ -85,7 +90,8 @@ export const getUserByEmail = async (req: Request, res: Response) => {
                 email: userEmail
             },
             include: {
-                trackList: true
+                trackList: true,
+                playLists: true
             }
         });
 
