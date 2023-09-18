@@ -21,8 +21,20 @@ export const createTrack = async (req: Request, res: Response) => {
             genres = genres.split(',').map((genre: string) => genre.trim());
         }
 
-        if (!Array.isArray(playlists)) {
+        let playListsIdArr = [];
+        if (playlists && !Array.isArray(playlists)) {
             playlists = playlists.split(',').map((playList: string) => playList.trim());
+            playListsIdArr = [];
+            for (const playListId of playlists) {
+                const playList = await prismaClient.playLists.findUnique({
+                    where: {
+                        id: playListId
+                    }
+                })
+                if (playList) {
+                    playListsIdArr.push(playList.id);
+                }
+            }
         }
 
         if (!name || !genres) {
@@ -42,17 +54,7 @@ export const createTrack = async (req: Request, res: Response) => {
         }
 
 
-        const playListsIdArr = [];
-        for (const playListId of playlists) {
-            const playList = await prismaClient.playLists.findUnique({
-                where: {
-                    id: playListId
-                }
-            })
-            if (playList) {
-                playListsIdArr.push(playList.id);
-            }
-        }
+
 
         if ((req.files as any)?.image && (req.files as any)?.audio) {
 
@@ -127,21 +129,33 @@ export const createTrack = async (req: Request, res: Response) => {
 
 export const createTrackByAdmin = async (req: Request, res: Response) => {
     try {
-        let { name, genres, albumName, playLists } = req.body;
+        let { name, genres, albumName, playlists } = req.body;
 
-
-        if (!Array.isArray(genres)) {
-            genres = genres.split(',').map((genre: string) => genre.trim());
-        }
-
-        if (!Array.isArray(playLists)) {
-            playLists = playLists.split(',').map((playList: string) => playList.trim());
-        }
-
-        if (!name || !genres) {
+        if (!name || !genres || !albumName) {
 
             res.status(404).send('Missing required data');
         }
+        if (!Array.isArray(genres)) {
+            genres = genres.split(',').map((genre: string) => genre.trim());
+        }
+        let playlistsIdArr = [];
+        if (playlists && !Array.isArray(playlists)) {
+            playlists = playlists.split(',').map((playList: string) => playList.trim());
+
+            playlistsIdArr = [];
+            for (const playListId of playlists) {
+                const playList = await prismaClient.playLists.findFirst({
+                    where: {
+                        id: playListId
+                    }
+                })
+                if (playList) {
+                    playlistsIdArr.push(playList.id);
+                }
+            }
+        }
+
+
         const genresIdArr = [];
         for (const genreName of genres) {
             const genre = await prismaClient.genres.findFirst({
@@ -154,17 +168,7 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
             }
         }
 
-        const playListsIdArr = [];
-        for (const playListId of playLists) {
-            const playList = await prismaClient.playLists.findFirst({
-                where: {
-                    id: playListId
-                }
-            })
-            if (playList) {
-                playListsIdArr.push(playList.id);
-            }
-        }
+
 
         const album = await prismaClient.albums.findFirst({
             where: {
@@ -193,7 +197,7 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
                     },
                     Users: {
                         connect: {
-                            id: "completar con el id del admin"
+                            id: "65082f9f44c584a6463d4704"
                         }
                     },
                     album: {
@@ -209,7 +213,7 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
                     verified: true,
                     privacity: false,
                     playLists: {
-                        connect: playListsIdArr.map(playListId => ({ id: playListId }))
+                        connect: playlistsIdArr.map(playlistId => ({ id: playlistId }))
                     },
                     listType: "track"
                 }
@@ -218,6 +222,7 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
         }
         else res.status(404).send('Missing files')
     } catch (error) {
+        console.log(error);
         res.status(500).send(error);
     }
 }
