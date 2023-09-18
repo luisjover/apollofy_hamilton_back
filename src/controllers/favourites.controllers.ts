@@ -88,3 +88,12 @@ export const deleteFavourites = async (req: Request, res: Response) => {
         res.status(500).send(error)
     }
 }
+
+export const getAllFavourites = async (req: Request, res: Response) => {
+    try {
+        const favourites = await prismaClient.favourites.findMany();
+        res.status(200).send(favourites)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
