@@ -47,7 +47,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
             include: {
                 playLists: true,
                 followers: true,
-                following: true
+                following: true,
+                favourites: true
             }
         });
 
@@ -70,7 +71,8 @@ export const getUserById = async (req: Request, res: Response) => {
                 trackList: true,
                 playLists: true,
                 followers: true,
-                following: true
+                following: true,
+                favourites: true
             }
         });
 
