@@ -9,7 +9,7 @@ export const createGenre = async (req: Request, res: Response) => {
 
     try {
         if (!name || !color) {
-            res.status(400).send({ error: "Missing one or more required fields" })
+            res.status(404).send({ error: "Missing one or more required fields" })
             return
         }
 

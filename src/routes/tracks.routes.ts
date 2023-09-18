@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { createTrack, deleteTrack, getAllTracks, getTrackById, updateTrack } from '../controllers/tracks.controllers';
+import { addTrackToPlaylist, createTrack, deleteTrack, getAllTracks, getTrackById, updateTrack } from '../controllers/tracks.controllers';
 
 const tracksRouter: Router = Router();
 
@@ -8,6 +8,7 @@ tracksRouter
     .get("/", getAllTracks)
     .get("/:trackId", getTrackById)
     .patch("/:trackId", updateTrack)
+    .patch("/update/:trackId", addTrackToPlaylist)
     .delete("/:trackId", deleteTrack)
 
 export default tracksRouter

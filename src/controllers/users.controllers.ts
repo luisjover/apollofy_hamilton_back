@@ -45,7 +45,9 @@ export const getAllUsers = async (req: Request, res: Response) => {
     try {
         const users = await prismaClient.users.findMany({
             include: {
-                playLists: true
+                playLists: true,
+                followers: true,
+                following: true
             }
         });
 

@@ -116,7 +116,11 @@ export const getTopPlaylists = async (req: Request, res: Response) => {
 //---------------------------------------------------------------------------
 export const getAllPlayLists = async (req: Request, res: Response) => {
     try {
-        const playLists = await prismaClient.playLists.findMany();
+        const playLists = await prismaClient.playLists.findMany({
+            include: {
+                tracks: true
+            }
+        });
 
         res.status(200).send(playLists)
     } catch (error) {
@@ -131,6 +135,9 @@ export const getPlayList = async (req: Request, res: Response) => {
         const playList = await prismaClient.playLists.findFirst({
             where: {
                 id: playListId
+            },
+            include: {
+                tracks: true
             }
         });
 

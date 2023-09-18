@@ -40,25 +40,16 @@ export const createTrack = async (req: Request, res: Response) => {
                 genresIdArr.push(genre.id);
             }
         }
-        // get current userPLaylists
-        const user = await prismaClient.users.findFirst({
-            where: {
-                id: userId
-            },
-            include: {
-                playLists: true
-            }
-        })
-        const userPlaylists = user?.playLists
-        //Get playlist Ids after checkind their existence
+
+
         const playListsIdArr = [];
         for (const playListId of playlists) {
-            const playList = await prismaClient.playLists.findFirst({
+            const playList = await prismaClient.playLists.findUnique({
                 where: {
                     id: playListId
                 }
             })
-            if (playList && userPlaylists?.includes(playListId)) {
+            if (playList) {
                 playListsIdArr.push(playList.id);
             }
         }
@@ -232,7 +223,11 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
 //----------------------------------------------------------------------------
 export const getAllTracks = async (req: Request, res: Response) => {
     try {
-        const tracks = await prismaClient.tracks.findMany();
+        const tracks = await prismaClient.tracks.findMany({
+            include: {
+                playLists: true
+            }
+        });
 
         res.status(200).send(tracks)
     } catch (error) {
@@ -248,6 +243,9 @@ export const getTrackById = async (req: Request, res: Response) => {
         const track = await prismaClient.tracks.findFirst({
             where: {
                 id: trackId
+            },
+            include: {
+                playLists: true
             }
         });
 
@@ -261,6 +259,28 @@ export const getTrackById = async (req: Request, res: Response) => {
         res.status(500).send(error)
     }
 }
+//----------------------------------------------------------------------------
+export const addTrackToPlaylist = async (req: Request, res: Response) => {
+    const { trackId } = req.params
+    const { playlistId } = req.body
+    try {
+        const trackToPlaylist = await prismaClient.tracks.update({
+            where: {
+                id: trackId
+            },
+            data: {
+                playLists: {
+                    connect: {
+                        id: playlistId
+                    }
+                }
+            }
+        })
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
+
 //----------------------------------------------------------------------------
 export const updateTrack = async (req: Request, res: Response) => { }
 //----------------------------------------------------------------------------
