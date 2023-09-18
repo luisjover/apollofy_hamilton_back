@@ -232,7 +232,8 @@ export const getAllTracks = async (req: Request, res: Response) => {
     try {
         const tracks = await prismaClient.tracks.findMany({
             include: {
-                playLists: true
+                playLists: true,
+                artists: true
             }
         });
 
@@ -252,7 +253,8 @@ export const getTrackById = async (req: Request, res: Response) => {
                 id: trackId
             },
             include: {
-                playLists: true
+                playLists: true,
+                artists: true
             }
         });
 
