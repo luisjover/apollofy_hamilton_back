@@ -121,10 +121,12 @@ export const updateUserFollowingById = async (req: Request, res: Response) => {
                 id: followingId
             }
         })
+        console.log(followingUser?.id);
         if (!followingUser) {
             res.status(404).send("User not found.")
         }
-        if (action === "follow") {
+
+        if (action === "follow" && followingUser) {
 
             const user = await prismaClient.users.update({
                 where: {
@@ -132,7 +134,9 @@ export const updateUserFollowingById = async (req: Request, res: Response) => {
                 },
                 data: {
                     following: {
-                        connect: followingId
+                        connect: {
+                            id: followingId
+                        }
                     }
                 }
             })
@@ -144,7 +148,9 @@ export const updateUserFollowingById = async (req: Request, res: Response) => {
                 },
                 data: {
                     following: {
-                        disconnect: followingId
+                        disconnect: {
+                            id: followingId
+                        }
                     }
                 }
             })
@@ -152,9 +158,12 @@ export const updateUserFollowingById = async (req: Request, res: Response) => {
         }
 
     } catch (error) {
+        console.log(error);
         res.status(500).send(error)
     }
 }
+//----------------------------------------------------------------------------
+
 //----------------------------------------------------------------------------
 export const deleteUser = async (req: Request, res: Response) => {
     try {

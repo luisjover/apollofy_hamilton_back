@@ -47,6 +47,7 @@ export const createPlayListsByAdmin = async (req: Request, res: Response) => {
         }
     } catch (error) {
         if (imageId) deleteImageMedia(imageId);
+        console.log(error);
         res.status(500).send(error);
     }
 }
