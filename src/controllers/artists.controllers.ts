@@ -1,18 +1,19 @@
 import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
-import { uploadCover } from "../utils/cloudinary";
+import { deleteImageMedia, uploadCover } from "../utils/cloudinary";
 import fs from 'fs-extra'
 
 
 export const createArtistByAdmin = async (req: Request, res: Response) => {
+    let imageId: string | null = null;
     let { name, genres, popularity, isTopTrend } = req.body;
     try {
-        if ((req.files as any)?.image && (req.files as any)?.audio) {
+        if ((req.files as any)?.image) {
 
             const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
             await fs.unlink((req.files as any).image.tempFilePath)
             const imageUrl = uploadedCover.secure_url;
-            const imageId = uploadedCover.public_id;
+            imageId = uploadedCover.public_id;
 
             if (!Array.isArray(genres)) {
                 genres = genres.split(',').map((genre: string) => genre.trim());
@@ -39,7 +40,7 @@ export const createArtistByAdmin = async (req: Request, res: Response) => {
                     genres: {
                         connect: genresIdArr.map(genreId => ({ id: genreId }))
                     },
-                    popularity,
+                    popularity: parseInt(popularity),
                     isTopTrend: topTrend,
                     imageUrl,
                     imageId,
@@ -51,6 +52,8 @@ export const createArtistByAdmin = async (req: Request, res: Response) => {
         }
 
     } catch (error) {
+        console.log(error);
+        if (imageId) deleteImageMedia(imageId)
         res.status(500).send(error)
     }
 }
@@ -60,6 +63,9 @@ export const getTopArtists = async (req: Request, res: Response) => {
         const topArtists = await prismaClient.artists.findMany({
             where: {
                 isTopTrend: true
+            },
+            include: {
+                albums: true
             }
         })
         res.status(200).send(topArtists);
@@ -70,7 +76,11 @@ export const getTopArtists = async (req: Request, res: Response) => {
 
 export const getAllArtists = async (req: Request, res: Response) => {
     try {
-        const artists = await prismaClient.artists.findMany();
+        const artists = await prismaClient.artists.findMany({
+            include: {
+                albums: true
+            }
+        });
 
         res.status(200).send(artists)
     } catch (error) {

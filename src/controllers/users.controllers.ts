@@ -68,7 +68,9 @@ export const getUserById = async (req: Request, res: Response) => {
             },
             include: {
                 trackList: true,
-                playLists: true
+                playLists: true,
+                followers: true,
+                following: true
             }
         });
 
@@ -108,7 +110,51 @@ export const getUserByEmail = async (req: Request, res: Response) => {
     }
 }
 //----------------------------------------------------------------------------
-export const updateUser = async (req: Request, res: Response) => { }
+export const updateUserFollowingById = async (req: Request, res: Response) => {
+    const { userId } = req.params
+    const { followingId, action } = req.body
+    //action must be follow or unfollow
+    try {
+
+        const followingUser = await prismaClient.users.findFirst({
+            where: {
+                id: followingId
+            }
+        })
+        if (!followingUser) {
+            res.status(404).send("User not found.")
+        }
+        if (action === "follow") {
+
+            const user = await prismaClient.users.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    following: {
+                        connect: followingId
+                    }
+                }
+            })
+            res.status(201).send(user)
+        } else {
+            const user = await prismaClient.users.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    following: {
+                        disconnect: followingId
+                    }
+                }
+            })
+            res.status(201).send(user)
+        }
+
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
 //----------------------------------------------------------------------------
 export const deleteUser = async (req: Request, res: Response) => {
     try {

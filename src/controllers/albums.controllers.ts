@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
-import { uploadCover } from "../utils/cloudinary";
+import { deleteImageMedia, uploadCover } from "../utils/cloudinary";
 import fs from 'fs-extra'
 
 export const createAlbumByAdmin = async (req: Request, res: Response) => {
+    let imageId: string | null = null;
     let { name, genres, popularity, artistsNames, isTopTrend } = req.body;
     try {
         if (!Array.isArray(artistsNames)) {
@@ -41,7 +42,7 @@ export const createAlbumByAdmin = async (req: Request, res: Response) => {
             const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
             await fs.unlink((req.files as any).image.tempFilePath)
             const imageUrl = uploadedCover.secure_url;
-            const imageId = uploadedCover.public_id;
+            imageId = uploadedCover.public_id;
             let topTrend: boolean;
             isTopTrend === "true" ? topTrend = true : topTrend = false;
             const newAlbum = await prismaClient.albums.create({
@@ -50,7 +51,7 @@ export const createAlbumByAdmin = async (req: Request, res: Response) => {
                     genres: {
                         connect: genresIdArr.map(genreId => ({ id: genreId }))
                     },
-                    popularity,
+                    popularity: parseInt(popularity),
                     artists: {
                         connect: artistsIdsArr.map(artistId => ({ id: artistId }))
                     },
@@ -63,9 +64,11 @@ export const createAlbumByAdmin = async (req: Request, res: Response) => {
             res.status(201).send(newAlbum);
         }
     } catch (error) {
+        if (imageId) deleteImageMedia(imageId);
         res.status(500).send(error)
     }
 }
+//----------------------------------------------------------------------
 
 export const getTopAlbums = async (req: Request, res: Response) => {
     try {
@@ -79,10 +82,14 @@ export const getTopAlbums = async (req: Request, res: Response) => {
         res.status(500).send(error)
     }
 }
-
+//----------------------------------------------------------------------
 export const getAllAlbums = async (req: Request, res: Response) => {
     try {
-        const albums = await prismaClient.albums.findMany();
+        const albums = await prismaClient.albums.findMany({
+            include: {
+                artists: true
+            }
+        });
 
         res.status(200).send(albums)
     } catch (error) {
@@ -90,7 +97,7 @@ export const getAllAlbums = async (req: Request, res: Response) => {
     }
 }
 
-
+//----------------------------------------------------------------------
 export const getAlbum = async (req: Request, res: Response) => {
     const { albumId } = req.params;
 
@@ -111,5 +118,20 @@ export const getAlbum = async (req: Request, res: Response) => {
         res.status(500).send(error)
     }
 }
+
+//----------------------------------------------------------------------
 export const updateAlbum = async (req: Request, res: Response) => { }
-export const deleteAlbum = async (req: Request, res: Response) => { }
+
+//----------------------------------------------------------------------
+export const deleteAlbum = async (req: Request, res: Response) => {
+    const { albumId } = req.params
+    try {
+        const albumToDelete = await prismaClient.albums.delete({
+            where: {
+                id: albumId
+            }
+        })
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}

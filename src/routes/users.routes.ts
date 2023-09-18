@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createUser, deleteUser, getAllUsers, getUserByEmail, getUserById, updateUser } from '../controllers/users.controllers';
+import { createUser, deleteUser, getAllUsers, getUserByEmail, getUserById, updateUserFollowingById } from '../controllers/users.controllers';
 
 
 const usersRouter: Router = Router();
@@ -9,7 +9,7 @@ usersRouter
     .get("/", getAllUsers)
     .get("/:userId", getUserById)
     .get("/:userEmail", getUserByEmail)
-    .patch("/:userId", updateUser)
+    .patch("/following/:userId", updateUserFollowingById)
     .delete("/:userId", deleteUser)
 
 export default usersRouter;

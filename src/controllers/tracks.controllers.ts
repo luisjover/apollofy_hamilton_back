@@ -276,11 +276,11 @@ export const addTrackToPlaylist = async (req: Request, res: Response) => {
                 }
             }
         })
+        res.status(201).send(trackToPlaylist)
     } catch (error) {
         res.status(500).send(error)
     }
 }
-
 //----------------------------------------------------------------------------
 export const updateTrack = async (req: Request, res: Response) => { }
 //----------------------------------------------------------------------------
