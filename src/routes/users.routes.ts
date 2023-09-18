@@ -9,7 +9,7 @@ usersRouter
     .get("/", getAllUsers)
     .get("/:userId", getUserById)
     .get("/:userEmail", getUserByEmail)
-    .put("/:userId", updateUser)
+    .patch("/:userId", updateUser)
     .delete("/:userId", deleteUser)
 
 export default usersRouter;

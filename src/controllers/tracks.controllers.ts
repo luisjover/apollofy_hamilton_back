@@ -104,7 +104,7 @@ export const createTrack = async (req: Request, res: Response) => {
         res.status(500).send(error);
     }
 }
-
+//----------------------------------------------------------------------------
 
 export const createTrackByAdmin = async (req: Request, res: Response) => {
     try {
@@ -202,7 +202,7 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
     }
 }
 
-
+//----------------------------------------------------------------------------
 export const getAllTracks = async (req: Request, res: Response) => {
     try {
         const tracks = await prismaClient.tracks.findMany();
@@ -212,7 +212,9 @@ export const getAllTracks = async (req: Request, res: Response) => {
         res.status(500).send(error);
     }
 }
-export const getTrack = async (req: Request, res: Response) => {
+
+//----------------------------------------------------------------------------
+export const getTrackById = async (req: Request, res: Response) => {
     const { trackId } = req.params;
 
     try {
@@ -232,7 +234,9 @@ export const getTrack = async (req: Request, res: Response) => {
         res.status(500).send(error)
     }
 }
+//----------------------------------------------------------------------------
 export const updateTrack = async (req: Request, res: Response) => { }
+//----------------------------------------------------------------------------
 export const deleteTrack = async (req: Request, res: Response) => {
     try {
         const { trackId } = req.params;
