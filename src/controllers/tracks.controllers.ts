@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
 import { uploadCover, uploadTrack, deleteImageMedia, deleteAudioMedia } from "../utils/cloudinary";
 import fs from 'fs-extra'
+import { adminIdentifier } from "../config/config";
 
 
 export const createTrack = async (req: Request, res: Response) => {
@@ -12,9 +13,14 @@ export const createTrack = async (req: Request, res: Response) => {
         const { userId } = req.params;
         let { name, genres, privacityString, playlists, albumName } = req.body;
 
+        if (!name || !genres || !privacityString) {
+            res.status(400).send({ error: "Missing one or more required fields" })
+            return;
+        }
 
         if (!userId) {
             res.status(404).send('User not found');
+            return;
         }
 
         if (!Array.isArray(genres)) {
@@ -37,10 +43,6 @@ export const createTrack = async (req: Request, res: Response) => {
             }
         }
 
-        if (!name || !genres) {
-
-            res.status(404).send('Missing required data');
-        }
         const genresIdArr = [];
         for (const genreName of genres) {
             const genre = await prismaClient.genres.findFirst({
@@ -83,7 +85,7 @@ export const createTrack = async (req: Request, res: Response) => {
                             genres: {
                                 connect: genresIdArr.map(genresId => ({ id: genresId })),
                             },
-                            Users: {
+                            user: {
                                 connect: {
                                     id: userId
                                 }
@@ -106,7 +108,7 @@ export const createTrack = async (req: Request, res: Response) => {
                             listType: "track"
                         }
                     })
-                    return res.status(200).send(newTrack)
+                    return res.status(201).send(newTrack)
                 }
             } else {
                 const newAlbum = await prismaClient.albums.create({
@@ -135,7 +137,7 @@ export const createTrack = async (req: Request, res: Response) => {
                         genres: {
                             connect: genresIdArr.map(genresId => ({ id: genresId })),
                         },
-                        Users: {
+                        user: {
                             connect: {
                                 id: userId
                             }
@@ -158,7 +160,7 @@ export const createTrack = async (req: Request, res: Response) => {
                         listType: "track"
                     }
                 })
-                return res.status(200).send(newTrack)
+                return res.status(201).send(newTrack)
             }
 
 
@@ -176,12 +178,17 @@ export const createTrack = async (req: Request, res: Response) => {
 //----------------------------------------------------------------------------
 
 export const createTrackByAdmin = async (req: Request, res: Response) => {
+
+    let imageId: string | null = null;
+    let audioId: string | null = null;
+
     try {
         let { name, genres, albumName, playlists, artistsNames } = req.body;
 
-        if (!name || !genres || !albumName) {
+        if (!name || !genres || !albumName || !artistsNames) {
 
             res.status(404).send('Missing required data');
+            return;
         }
         if (!Array.isArray(genres)) {
             genres = genres.split(',').map((genre: string) => genre.trim());
@@ -189,6 +196,7 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
         if (!Array.isArray(artistsNames)) {
             artistsNames = artistsNames.split(',').map((artistName: string) => artistName.trim());
         }
+
         let playlistsIdArr = [];
         if (playlists && !Array.isArray(playlists)) {
             playlists = playlists.split(',').map((playList: string) => playList.trim());
@@ -247,19 +255,20 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
             await fs.unlink((req.files as any).audio.tempFilePath)
 
             const imageUrl = uploadedCover.secure_url;
-            const imageId = uploadedCover.public_id;
+            imageId = uploadedCover.public_id;
 
             const audioUrl = uploadedAudio.secure_url;
-            const audioId = uploadedAudio.public_id;
+            audioId = uploadedAudio.public_id;
+            const adminId = adminIdentifier;
             const newTrack = await prismaClient.tracks.create({
                 data: {
                     name: name,
                     genres: {
                         connect: genresIdArr.map(genresId => ({ id: genresId })),
                     },
-                    Users: {
+                    user: {
                         connect: {
-                            id: "65082f9f44c584a6463d4704"
+                            id: adminId
                         }
                     },
                     album: {
@@ -287,7 +296,10 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
         }
         else res.status(404).send('Missing files')
     } catch (error) {
-        console.log(error);
+
+        if (imageId) deleteImageMedia(imageId);
+        if (audioId) deleteAudioMedia(audioId);
+
         res.status(500).send(error);
     }
 }

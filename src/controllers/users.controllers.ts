@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
+import { listenerCount } from "process";
 
 export const createUser = async (req: Request, res: Response) => {
 
@@ -29,6 +30,7 @@ export const createUser = async (req: Request, res: Response) => {
                 followers: true,
                 following: true,
                 playlists: true,
+                albums: true
             }
         })
 
@@ -48,6 +50,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
                 playlists: true,
                 followers: true,
                 following: true,
+                albums: true,
+                trackList: true,
                 favourites: {
                     include: {
                         album: true,
@@ -79,6 +83,7 @@ export const getUserById = async (req: Request, res: Response) => {
                 playlists: true,
                 followers: true,
                 following: true,
+                albums: true,
                 favourites: {
                     include: {
                         album: true,
@@ -111,7 +116,18 @@ export const getUserByEmail = async (req: Request, res: Response) => {
             },
             include: {
                 trackList: true,
-                playlists: true
+                playlists: true,
+                followers: true,
+                following: true,
+                albums: true,
+                favourites: {
+                    include: {
+                        album: true,
+                        artist: true,
+                        playlist: true,
+                        track: true
+                    }
+                }
             }
         });
 
@@ -137,7 +153,7 @@ export const updateUserFollowingById = async (req: Request, res: Response) => {
                 id: followingId
             }
         })
-        console.log(followingUser?.id);
+
         if (!followingUser) {
             res.status(404).send("User not found.")
         }
@@ -174,7 +190,7 @@ export const updateUserFollowingById = async (req: Request, res: Response) => {
         }
 
     } catch (error) {
-        console.log(error);
+
         res.status(500).send(error)
     }
 }

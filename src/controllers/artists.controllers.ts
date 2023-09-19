@@ -8,6 +8,11 @@ export const createArtistByAdmin = async (req: Request, res: Response) => {
     let imageId: string | null = null;
     let { name, genres, popularity, isTopTrend } = req.body;
     try {
+        if (!name || !genres || !popularity || !isTopTrend) {
+            res.status(400).send({ error: "Missing one or more required fields" })
+            return
+        }
+
         if ((req.files as any)?.image) {
 
             const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
@@ -52,7 +57,7 @@ export const createArtistByAdmin = async (req: Request, res: Response) => {
         }
 
     } catch (error) {
-        console.log(error);
+
         if (imageId) deleteImageMedia(imageId)
         res.status(500).send(error)
     }
@@ -65,7 +70,8 @@ export const getTopArtists = async (req: Request, res: Response) => {
                 isTopTrend: true
             },
             include: {
-                albums: true
+                albums: true,
+                tracks: true
             }
         })
         res.status(200).send(topArtists);
@@ -95,6 +101,10 @@ export const getArtist = async (req: Request, res: Response) => {
         const artist = await prismaClient.artists.findFirst({
             where: {
                 id: artistId
+            },
+            include: {
+                albums: true,
+                tracks: true
             }
         });
 

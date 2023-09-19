@@ -5,6 +5,11 @@ export const createFavourites = async (req: Request, res: Response) => {
     const { userId } = req.params
     const { listType, listTypeId } = req.body
     try {
+        if (!listType || !listTypeId) {
+            res.status(400).send({ error: "Missing one or more required fields" })
+            return
+        }
+
         let favourite;
         if (listType === "artist") {
             const artistToAdd = await prismaClient.artists.findUnique({

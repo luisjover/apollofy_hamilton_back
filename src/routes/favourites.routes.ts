@@ -5,6 +5,7 @@ import { createFavourites, deleteFavourites, getAllFavourites } from "../control
 
 export const favouritesRouter: Router = Router();
 
-favouritesRouter.post("/:userId", createFavourites)
+favouritesRouter
+    .post("/:userId", createFavourites)
     .delete("/:favouriteId", deleteFavourites)
     .get("/", getAllFavourites)

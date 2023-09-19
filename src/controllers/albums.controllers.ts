@@ -7,7 +7,13 @@ import { adminIdentifier } from "../config/config";
 export const createAlbumByAdmin = async (req: Request, res: Response) => {
     let imageId: string | null = null;
     let { name, genres, popularity, artistsNames, isTopTrend } = req.body;
+
     try {
+        if (!name || !genres || !popularity || !artistsNames || !isTopTrend) {
+            res.status(400).send({ error: "Missing one or more required fields" })
+            return
+        }
+
         if (!Array.isArray(artistsNames)) {
             artistsNames = artistsNames.split(',').map((artistId: string) => artistId.trim());
         }
@@ -82,6 +88,10 @@ export const createAlbum = async (req: Request, res: Response) => {
     const { userId } = req.params
     let { name, genres, privacityString } = req.body;
     try {
+        if (!name || !genres || !privacityString) {
+            res.status(400).send({ error: "Missing one or more required fields" })
+            return
+        }
 
         if (!Array.isArray(genres)) {
             genres = genres.split(',').map((genre: string) => genre.trim());
@@ -145,6 +155,10 @@ export const getTopAlbums = async (req: Request, res: Response) => {
         const topAlbums = await prismaClient.albums.findMany({
             where: {
                 isTopTrend: true
+            },
+            include: {
+                artists: true,
+                tracks: true
             }
         })
         res.status(200).send(topAlbums)
