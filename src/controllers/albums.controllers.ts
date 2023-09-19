@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
 import { deleteImageMedia, uploadCover } from "../utils/cloudinary";
 import fs from 'fs-extra'
+import { adminIdentifier } from "../config/config";
 
 export const createAlbumByAdmin = async (req: Request, res: Response) => {
     let imageId: string | null = null;
@@ -58,13 +59,82 @@ export const createAlbumByAdmin = async (req: Request, res: Response) => {
                     listType: "album",
                     isTopTrend: topTrend,
                     imageUrl,
-                    imageId
+                    imageId,
+                    privacity: false,
+                    verified: true,
+                    owner: {
+                        connect: {
+                            id: adminIdentifier
+                        }
+                    }
                 }
             })
             res.status(201).send(newAlbum);
         }
     } catch (error) {
         if (imageId) deleteImageMedia(imageId);
+        res.status(500).send(error)
+    }
+}
+
+export const createAlbum = async (req: Request, res: Response) => {
+    let imageId: string | null = null;
+    const { userId } = req.params
+    let { name, genres, privacityString } = req.body;
+    try {
+
+        if (!Array.isArray(genres)) {
+            genres = genres.split(',').map((genre: string) => genre.trim());
+        }
+
+        const genresIdArr = [];
+        for (const genreName of genres) {
+            const genre = await prismaClient.genres.findFirst({
+                where: {
+                    name: genreName
+                }
+            })
+            if (genre) {
+                genresIdArr.push(genre.id);
+            }
+        }
+
+        if ((req.files as any)?.image) {
+
+            const uploadedCover = await uploadCover((req.files as any).image.tempFilePath);
+            await fs.unlink((req.files as any).image.tempFilePath)
+            const imageUrl = uploadedCover.secure_url;
+            imageId = uploadedCover.public_id;
+
+            let privacity: boolean;
+            if (privacityString === "true") privacity = true
+            else privacity = false
+
+            const newAlbum = await prismaClient.albums.create({
+                data: {
+                    name,
+                    genres: {
+                        connect: genresIdArr.map(genreId => ({ id: genreId }))
+                    },
+                    popularity: 0,
+                    listType: "album",
+                    isTopTrend: false,
+                    imageUrl,
+                    imageId,
+                    verified: false,
+                    privacity: privacity,
+                    owner: {
+                        connect: {
+                            id: userId
+                        }
+                    }
+                }
+            })
+            res.status(201).send(newAlbum);
+        }
+
+    } catch (error) {
+        if (imageId) deleteImageMedia(imageId)
         res.status(500).send(error)
     }
 }

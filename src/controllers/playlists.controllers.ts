@@ -27,7 +27,7 @@ export const createPlayListsByAdmin = async (req: Request, res: Response) => {
 
             const adminId = adminIdentifier as string;
 
-            const newPlaylist = await prismaClient.playLists.create({
+            const newPlaylist = await prismaClient.playlists.create({
                 data: {
                     name,
                     imageUrl,
@@ -35,6 +35,7 @@ export const createPlayListsByAdmin = async (req: Request, res: Response) => {
                     description: description,
                     listType: "playlist",
                     privacity: false,
+                    verified: true,
                     owner: {
                         connect: {
                             id: adminId
@@ -75,7 +76,7 @@ export const createPlayList = async (req: Request, res: Response) => {
             await fs.unlink((req.files as any).image.tempFilePath)
             const imageUrl = uploadedCover.secure_url;
             imageId = uploadedCover.public_id;
-            const newPlaylist = await prismaClient.playLists.create({
+            const newPlaylist = await prismaClient.playlists.create({
                 data: {
                     name,
                     imageUrl,
@@ -83,6 +84,7 @@ export const createPlayList = async (req: Request, res: Response) => {
                     description: description,
                     listType: "playlist",
                     privacity: privacity,
+                    verified: false,
                     owner: {
                         connect: {
                             id: userId
@@ -101,7 +103,7 @@ export const createPlayList = async (req: Request, res: Response) => {
 //---------------------------------------------------------------------------
 export const getTopPlaylists = async (req: Request, res: Response) => {
     try {
-        const topPlaylists = await prismaClient.playLists.findMany({
+        const topPlaylists = await prismaClient.playlists.findMany({
             where: {
                 isTopTrend: true
             },
@@ -117,7 +119,7 @@ export const getTopPlaylists = async (req: Request, res: Response) => {
 //---------------------------------------------------------------------------
 export const getAllPlayLists = async (req: Request, res: Response) => {
     try {
-        const playLists = await prismaClient.playLists.findMany({
+        const playLists = await prismaClient.playlists.findMany({
             include: {
                 tracks: true
             }
@@ -133,7 +135,7 @@ export const getPlayList = async (req: Request, res: Response) => {
     const { playListId } = req.params;
 
     try {
-        const playList = await prismaClient.playLists.findFirst({
+        const playList = await prismaClient.playlists.findFirst({
             where: {
                 id: playListId
             },
@@ -161,10 +163,10 @@ export const getUserPlaylistsById = async (req: Request, res: Response) => {
                 id: userId
             },
             include: {
-                playLists: true
+                playlists: true
             }
         })
-        const userPlaylists = user?.playLists
+        const userPlaylists = user?.playlists
         res.status(200).send(userPlaylists);
     } catch (error) {
         res.status(500)
@@ -176,7 +178,7 @@ export const updatePlayList = async (req: Request, res: Response) => { }
 export const deletePlayListById = async (req: Request, res: Response) => {
     const { playlistId } = req.params;
     try {
-        await prismaClient.playLists.delete({
+        await prismaClient.playlists.delete({
             where: {
                 id: playlistId
             }

@@ -51,7 +51,7 @@ export const createFavourites = async (req: Request, res: Response) => {
             })
             res.status(201).send(favourite)
         } else if (listType === "playlist") {
-            const playlistToAdd = await prismaClient.playLists.findUnique({
+            const playlistToAdd = await prismaClient.playlists.findUnique({
                 where: {
                     id: listTypeId
                 }

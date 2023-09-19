@@ -28,7 +28,7 @@ export const createUser = async (req: Request, res: Response) => {
                 trackList: true,
                 followers: true,
                 following: true,
-                playLists: true,
+                playlists: true,
             }
         })
 
@@ -45,7 +45,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
     try {
         const users = await prismaClient.users.findMany({
             include: {
-                playLists: true,
+                playlists: true,
                 followers: true,
                 following: true,
                 favourites: {
@@ -76,7 +76,7 @@ export const getUserById = async (req: Request, res: Response) => {
             },
             include: {
                 trackList: true,
-                playLists: true,
+                playlists: true,
                 followers: true,
                 following: true,
                 favourites: {
@@ -111,7 +111,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
             },
             include: {
                 trackList: true,
-                playLists: true
+                playlists: true
             }
         });
 

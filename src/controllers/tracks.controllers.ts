@@ -10,7 +10,7 @@ export const createTrack = async (req: Request, res: Response) => {
     try {
 
         const { userId } = req.params;
-        let { name, genres, privacityString, playlists } = req.body;
+        let { name, genres, privacityString, playlists, albumName } = req.body;
 
 
         if (!userId) {
@@ -21,18 +21,18 @@ export const createTrack = async (req: Request, res: Response) => {
             genres = genres.split(',').map((genre: string) => genre.trim());
         }
 
-        let playListsIdArr = [];
+        let playlistsIdArr = [];
         if (playlists && !Array.isArray(playlists)) {
-            playlists = playlists.split(',').map((playList: string) => playList.trim());
-            playListsIdArr = [];
-            for (const playListId of playlists) {
-                const playList = await prismaClient.playLists.findUnique({
+            playlists = playlists.split(',').map((playlist: string) => playlist.trim());
+            playlistsIdArr = [];
+            for (const playlistId of playlists) {
+                const playlist = await prismaClient.playlists.findUnique({
                     where: {
-                        id: playListId
+                        id: playlistId
                     }
                 })
-                if (playList) {
-                    playListsIdArr.push(playList.id);
+                if (playlist) {
+                    playlistsIdArr.push(playlist.id);
                 }
             }
         }
@@ -65,55 +65,103 @@ export const createTrack = async (req: Request, res: Response) => {
             await fs.unlink((req.files as any).audio.tempFilePath)
             const imageUrl = uploadedCover.secure_url;
             imageId = uploadedCover.public_id;
-
-            const newAlbum = await prismaClient.albums.create({
-                data: {
-                    name,
-                    genres: {
-                        connect: genresIdArr.map(genresId => ({ id: genresId })),
-                    },
-                    imageUrl,
-                    imageId,
-                    popularity: 0,
-                    listType: "album",
-                    isTopTrend: false
-                }
-            })
             const audioUrl = uploadedAudio.secure_url;
             audioId = uploadedAudio.public_id;
             let privacity: boolean;
             if (privacityString === "true") privacity = true
             else privacity = false
-            const newTrack = await prismaClient.tracks.create({
-                data: {
-                    name: name,
-                    genres: {
-                        connect: genresIdArr.map(genresId => ({ id: genresId })),
-                    },
-                    Users: {
-                        connect: {
-                            id: userId
+            if (albumName) {
+                const newAlbum = await prismaClient.albums.findFirst({
+                    where: {
+                        name: albumName
+                    }
+                })
+                if (newAlbum) {
+                    const newTrack = await prismaClient.tracks.create({
+                        data: {
+                            name: name,
+                            genres: {
+                                connect: genresIdArr.map(genresId => ({ id: genresId })),
+                            },
+                            Users: {
+                                connect: {
+                                    id: userId
+                                }
+                            },
+                            album: {
+                                connect: {
+                                    id: newAlbum.id
+                                }
+                            },
+                            imageUrl,
+                            imageId,
+                            audioUrl,
+                            audioId,
+                            likes: 0,
+                            verified: false,
+                            privacity: privacity,
+                            playlists: {
+                                connect: playlistsIdArr.map(playlistId => ({ id: playlistId }))
+                            },
+                            listType: "track"
                         }
-                    },
-                    album: {
-                        connect: {
-                            id: newAlbum.id
-                        }
-                    },
-                    imageUrl,
-                    imageId,
-                    audioUrl,
-                    audioId,
-                    likes: 0,
-                    verified: false,
-                    privacity: privacity,
-                    playLists: {
-                        connect: playListsIdArr.map(playListId => ({ id: playListId }))
-                    },
-                    listType: "track"
+                    })
+                    return res.status(200).send(newTrack)
                 }
-            })
-            return res.status(200).send(newTrack)
+            } else {
+                const newAlbum = await prismaClient.albums.create({
+                    data: {
+                        name,
+                        genres: {
+                            connect: genresIdArr.map(genresId => ({ id: genresId })),
+                        },
+                        imageUrl,
+                        imageId,
+                        popularity: 0,
+                        listType: "album",
+                        isTopTrend: false,
+                        privacity: privacity,
+                        verified: false,
+                        owner: {
+                            connect: {
+                                id: userId
+                            }
+                        }
+                    }
+                })
+                const newTrack = await prismaClient.tracks.create({
+                    data: {
+                        name: name,
+                        genres: {
+                            connect: genresIdArr.map(genresId => ({ id: genresId })),
+                        },
+                        Users: {
+                            connect: {
+                                id: userId
+                            }
+                        },
+                        album: {
+                            connect: {
+                                id: newAlbum.id
+                            }
+                        },
+                        imageUrl,
+                        imageId,
+                        audioUrl,
+                        audioId,
+                        likes: 0,
+                        verified: false,
+                        privacity: privacity,
+                        playlists: {
+                            connect: playlistsIdArr.map(playlistId => ({ id: playlistId }))
+                        },
+                        listType: "track"
+                    }
+                })
+                return res.status(200).send(newTrack)
+            }
+
+
         }
         else {
             res.status(404).send('Missing files');
@@ -146,14 +194,14 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
             playlists = playlists.split(',').map((playList: string) => playList.trim());
 
             playlistsIdArr = [];
-            for (const playListId of playlists) {
-                const playList = await prismaClient.playLists.findFirst({
+            for (const playlistId of playlists) {
+                const playlist = await prismaClient.playlists.findFirst({
                     where: {
-                        id: playListId
+                        id: playlistId
                     }
                 })
-                if (playList) {
-                    playlistsIdArr.push(playList.id);
+                if (playlist) {
+                    playlistsIdArr.push(playlist.id);
                 }
             }
         }
@@ -226,7 +274,7 @@ export const createTrackByAdmin = async (req: Request, res: Response) => {
                     likes: 0,
                     verified: true,
                     privacity: false,
-                    playLists: {
+                    playlists: {
                         connect: playlistsIdArr.map(playlistId => ({ id: playlistId }))
                     },
                     listType: "track",
@@ -249,7 +297,7 @@ export const getAllTracks = async (req: Request, res: Response) => {
     try {
         const tracks = await prismaClient.tracks.findMany({
             include: {
-                playLists: true,
+                playlists: true,
                 artists: true
             }
         });
@@ -270,7 +318,7 @@ export const getTrackById = async (req: Request, res: Response) => {
                 id: trackId
             },
             include: {
-                playLists: true,
+                playlists: true,
                 artists: true
             }
         });
@@ -295,7 +343,7 @@ export const addTrackToPlaylist = async (req: Request, res: Response) => {
                 id: trackId
             },
             data: {
-                playLists: {
+                playlists: {
                     connect: {
                         id: playlistId
                     }
