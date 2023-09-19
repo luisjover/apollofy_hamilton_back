@@ -108,7 +108,12 @@ export const getTopPlaylists = async (req: Request, res: Response) => {
                 isTopTrend: true
             },
             include: {
-                tracks: true
+                tracks: {
+                    include: {
+                        artists: true,
+                        album: true
+                    }
+                }
             }
         })
         res.status(200).send(topPlaylists);

@@ -158,7 +158,12 @@ export const getTopAlbums = async (req: Request, res: Response) => {
             },
             include: {
                 artists: true,
-                tracks: true
+                tracks: {
+                    include: {
+                        artists: true,
+                        album: true
+                    }
+                }
             }
         })
         res.status(200).send(topAlbums)

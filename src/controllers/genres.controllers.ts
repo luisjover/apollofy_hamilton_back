@@ -38,7 +38,11 @@ export const createGenre = async (req: Request, res: Response) => {
 
 export const getGenres = async (req: Request, res: Response) => {
     try {
-        const genres = await prismaClient.genres.findMany();
+        const genres = await prismaClient.genres.findMany({
+            include: {
+                tracks: true
+            }
+        });
         res.status(200).send(genres);
     } catch (error) {
         res.status(500).send(error)
