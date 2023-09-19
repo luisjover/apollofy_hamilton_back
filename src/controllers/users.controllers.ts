@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
-import { listenerCount } from "process";
 
 export const createUser = async (req: Request, res: Response) => {
 

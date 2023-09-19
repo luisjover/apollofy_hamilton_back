@@ -85,7 +85,8 @@ export const getAllArtists = async (req: Request, res: Response) => {
         const artists = await prismaClient.artists.findMany({
             include: {
                 albums: true,
-                tracks: true
+                tracks: true,
+                genres: true
             }
         });
 
@@ -104,7 +105,8 @@ export const getArtist = async (req: Request, res: Response) => {
             },
             include: {
                 albums: true,
-                tracks: true
+                tracks: true,
+                genres: true
             }
         });
 

@@ -121,7 +121,8 @@ export const getAllPlayLists = async (req: Request, res: Response) => {
     try {
         const playLists = await prismaClient.playlists.findMany({
             include: {
-                tracks: true
+                tracks: true,
+                owner: true
             }
         });
 

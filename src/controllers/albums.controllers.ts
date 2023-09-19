@@ -172,7 +172,8 @@ export const getAllAlbums = async (req: Request, res: Response) => {
         const albums = await prismaClient.albums.findMany({
             include: {
                 artists: true,
-                tracks: true
+                tracks: true,
+                genres: true
             }
         });
 
@@ -193,7 +194,8 @@ export const getAlbum = async (req: Request, res: Response) => {
             },
             include: {
                 artists: true,
-                tracks: true
+                tracks: true,
+                genres: true
             }
         });
 
@@ -220,6 +222,7 @@ export const deleteAlbum = async (req: Request, res: Response) => {
                 id: albumId
             }
         })
+        res.status(204).send("Album deleted successfully.")
     } catch (error) {
         res.status(500).send(error)
     }
