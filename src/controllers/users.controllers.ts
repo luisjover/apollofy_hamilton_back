@@ -29,7 +29,8 @@ export const createUser = async (req: Request, res: Response) => {
                 followers: true,
                 following: true,
                 playlists: true,
-                albums: true
+                albums: true,
+                favourites: true
             }
         })
 
