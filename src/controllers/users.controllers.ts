@@ -144,7 +144,13 @@ export const getUserByEmail = async (req: Request, res: Response) => {
                 email: userEmail
             },
             include: {
-                trackList: true,
+                trackList: {
+                    include: {
+                        album: true,
+                        artists: true,
+                        playlists: true
+                    }
+                },
                 playlists: {
                     include: {
                         tracks: true
