@@ -153,7 +153,8 @@ export const deleteFavourites = async (req: Request, res: Response) => {
                 }
             }
         })
-        res.status(204).send(user)
+        res.status(200).send(user)
+        return
     } catch (error) {
         res.status(500).send(error)
     }
