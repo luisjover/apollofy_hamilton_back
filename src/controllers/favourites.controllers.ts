@@ -126,14 +126,34 @@ export const createFavourites = async (req: Request, res: Response) => {
 }
 //----------------------------------------------------------------------------
 export const deleteFavourites = async (req: Request, res: Response) => {
-    const { favouriteId } = req.params
+    const { favouriteId, userId } = req.params
     try {
         const favourite = await prismaClient.favourites.delete({
             where: {
                 id: favouriteId
             }
         })
-        res.status(204).send("Favourite item deleted successfully!")
+        const user = await prismaClient.users.findUnique({
+            where: {
+                id: userId
+            },
+            include: {
+                playlists: true,
+                followers: true,
+                following: true,
+                albums: true,
+                trackList: true,
+                favourites: {
+                    include: {
+                        album: true,
+                        artist: true,
+                        playlist: true,
+                        track: true
+                    }
+                }
+            }
+        })
+        res.status(204).send(user)
     } catch (error) {
         res.status(500).send(error)
     }
