@@ -3,6 +3,7 @@ import prismaClient from "../db/clientPrisma";
 import { uploadCover, uploadTrack, deleteImageMedia, deleteAudioMedia } from "../utils/cloudinary";
 import fs from 'fs-extra'
 import { adminIdentifier } from "../config/config";
+import { Albums } from "@prisma/client";
 
 
 export const createTrack = async (req: Request, res: Response) => {
@@ -73,43 +74,64 @@ export const createTrack = async (req: Request, res: Response) => {
             if (privacityString === "true") privacity = true
             else privacity = false
             if (albumName) {
-                const newAlbum = await prismaClient.albums.findFirst({
+                let newAlbum = null;
+                newAlbum = await prismaClient.albums.findFirst({
                     where: {
                         name: albumName
                     }
                 })
-                if (newAlbum) {
-                    const newTrack = await prismaClient.tracks.create({
+                if (!newAlbum) {
+                    newAlbum = await prismaClient.albums.create({
                         data: {
-                            name: name,
+                            name: albumName,
                             genres: {
                                 connect: genresIdArr.map(genresId => ({ id: genresId })),
                             },
-                            user: {
+                            imageUrl,
+                            imageId,
+                            popularity: 0,
+                            listType: "album",
+                            isTopTrend: false,
+                            privacity: privacity,
+                            verified: false,
+                            owner: {
                                 connect: {
                                     id: userId
                                 }
-                            },
-                            album: {
-                                connect: {
-                                    id: newAlbum.id
-                                }
-                            },
-                            imageUrl,
-                            imageId,
-                            audioUrl,
-                            audioId,
-                            likes: 0,
-                            verified: false,
-                            privacity: privacity,
-                            playlists: {
-                                connect: playlistsIdArr.map(playlistId => ({ id: playlistId }))
-                            },
-                            listType: "track"
+                            }
+
                         }
                     })
-
                 }
+                const newTrack = await prismaClient.tracks.create({
+                    data: {
+                        name: name,
+                        genres: {
+                            connect: genresIdArr.map(genresId => ({ id: genresId })),
+                        },
+                        user: {
+                            connect: {
+                                id: userId
+                            }
+                        },
+                        album: {
+                            connect: {
+                                id: newAlbum.id
+                            }
+                        },
+                        imageUrl,
+                        imageId,
+                        audioUrl,
+                        audioId,
+                        likes: 0,
+                        verified: false,
+                        privacity: privacity,
+                        playlists: {
+                            connect: playlistsIdArr.map(playlistId => ({ id: playlistId }))
+                        },
+                        listType: "track"
+                    }
+                })
             } else {
                 const newAlbum = await prismaClient.albums.create({
                     data: {
@@ -167,10 +189,18 @@ export const createTrack = async (req: Request, res: Response) => {
                     id: userId
                 },
                 include: {
-                    playlists: true,
+                    playlists: {
+                        include: {
+                            tracks: true
+                        }
+                    },
                     followers: true,
                     following: true,
-                    albums: true,
+                    albums: {
+                        include: {
+                            tracks: true
+                        }
+                    },
                     trackList: true,
                     favourites: {
                         include: {
