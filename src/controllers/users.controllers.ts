@@ -28,8 +28,16 @@ export const createUser = async (req: Request, res: Response) => {
                 trackList: true,
                 followers: true,
                 following: true,
-                playlists: true,
-                albums: true,
+                playlists: {
+                    include: {
+                        tracks: true
+                    }
+                },
+                albums: {
+                    include: {
+                        tracks: true
+                    }
+                },
                 favourites: true
             }
         })
@@ -47,10 +55,18 @@ export const getAllUsers = async (req: Request, res: Response) => {
     try {
         const users = await prismaClient.users.findMany({
             include: {
-                playlists: true,
+                playlists: {
+                    include: {
+                        tracks: true
+                    }
+                },
                 followers: true,
                 following: true,
-                albums: true,
+                albums: {
+                    include: {
+                        tracks: true
+                    }
+                },
                 trackList: true,
                 favourites: {
                     include: {
@@ -79,17 +95,30 @@ export const getUserById = async (req: Request, res: Response) => {
                 id: userId
             },
             include: {
-                trackList: true,
-                playlists: true,
                 followers: true,
                 following: true,
-                albums: true,
+                playlists: {
+                    include: {
+                        tracks: true
+                    }
+                },
+                albums: {
+                    include: {
+                        tracks: true
+                    }
+                },
                 favourites: {
                     include: {
                         album: true,
                         artist: true,
                         playlist: true,
                         track: true
+                    }
+                },
+                trackList: {
+                    include: {
+                        playlists: true,
+                        artists: true
                     }
                 }
             }
@@ -116,10 +145,18 @@ export const getUserByEmail = async (req: Request, res: Response) => {
             },
             include: {
                 trackList: true,
-                playlists: true,
+                playlists: {
+                    include: {
+                        tracks: true
+                    }
+                },
                 followers: true,
                 following: true,
-                albums: true,
+                albums: {
+                    include: {
+                        tracks: true
+                    }
+                },
                 favourites: {
                     include: {
                         album: true,
