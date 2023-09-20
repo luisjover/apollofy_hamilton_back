@@ -10,6 +10,27 @@ export const createFavourites = async (req: Request, res: Response) => {
             return
         }
 
+        const user = await prismaClient.users.findUnique({
+            where: {
+                id: userId
+            },
+            include: {
+                playlists: true,
+                followers: true,
+                following: true,
+                albums: true,
+                trackList: true,
+                favourites: {
+                    include: {
+                        album: true,
+                        artist: true,
+                        playlist: true,
+                        track: true
+                    }
+                }
+            }
+        })
+
         let favourite;
         if (listType === "artist") {
             const artistToAdd = await prismaClient.artists.findUnique({
@@ -32,7 +53,7 @@ export const createFavourites = async (req: Request, res: Response) => {
                     listType
                 }
             })
-            res.status(201).send(favourite)
+            res.status(201).send(user)
         } else if (listType === "album") {
             const albumToAdd = await prismaClient.albums.findUnique({
                 where: {
@@ -54,7 +75,7 @@ export const createFavourites = async (req: Request, res: Response) => {
                     listType
                 }
             })
-            res.status(201).send(favourite)
+            res.status(201).send(user)
         } else if (listType === "playlist") {
             const playlistToAdd = await prismaClient.playlists.findUnique({
                 where: {
@@ -76,7 +97,7 @@ export const createFavourites = async (req: Request, res: Response) => {
                     listType
                 }
             })
-            res.status(201).send(favourite)
+            res.status(201).send(user)
         } else if (listType === "track") {
             const trackToAdd = await prismaClient.tracks.findUnique({
                 where: {
@@ -98,7 +119,7 @@ export const createFavourites = async (req: Request, res: Response) => {
                     listType
                 }
             })
-            res.status(201).send(favourite)
+            res.status(201).send(user)
         } else {
             res.status(404).send("Favourite not added.")
         }
