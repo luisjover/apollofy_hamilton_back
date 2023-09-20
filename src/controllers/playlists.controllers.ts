@@ -126,7 +126,11 @@ export const getAllPlayLists = async (req: Request, res: Response) => {
     try {
         const playLists = await prismaClient.playlists.findMany({
             include: {
-                tracks: true,
+                tracks: {
+                    include: {
+                        artists: true
+                    }
+                },
                 owner: true
             }
         });
@@ -146,7 +150,12 @@ export const getPlayList = async (req: Request, res: Response) => {
                 id: playListId
             },
             include: {
-                tracks: true
+                tracks: {
+                    include: {
+                        playlists: true,
+                        artists: true
+                    }
+                }
             }
         });
 
@@ -191,6 +200,7 @@ export const deletePlayListById = async (req: Request, res: Response) => {
         })
         res.status(204).send("Playlist deleted successfully");
     } catch (error) {
+        console.log(error);
         res.status(500).send(error);
     }
 }

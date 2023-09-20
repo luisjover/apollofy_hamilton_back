@@ -108,7 +108,7 @@ export const createTrack = async (req: Request, res: Response) => {
                             listType: "track"
                         }
                     })
-                    return res.status(201).send(newTrack)
+
                 }
             } else {
                 const newAlbum = await prismaClient.albums.create({
@@ -160,10 +160,29 @@ export const createTrack = async (req: Request, res: Response) => {
                         listType: "track"
                     }
                 })
-                return res.status(201).send(newTrack)
+
             }
-
-
+            const user = await prismaClient.users.findUnique({
+                where: {
+                    id: userId
+                },
+                include: {
+                    playlists: true,
+                    followers: true,
+                    following: true,
+                    albums: true,
+                    trackList: true,
+                    favourites: {
+                        include: {
+                            album: true,
+                            artist: true,
+                            playlist: true,
+                            track: true
+                        }
+                    }
+                }
+            })
+            res.status(200).send(user)
         }
         else {
             res.status(404).send('Missing files');
