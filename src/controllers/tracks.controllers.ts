@@ -3,7 +3,7 @@ import prismaClient from "../db/clientPrisma";
 import { uploadCover, uploadTrack, deleteImageMedia, deleteAudioMedia } from "../utils/cloudinary";
 import fs from 'fs-extra'
 import { adminIdentifier } from "../config/config";
-import { Albums } from "@prisma/client";
+import { Albums, Tracks } from "@prisma/client";
 
 
 export const createTrack = async (req: Request, res: Response) => {
@@ -423,11 +423,28 @@ export const deleteTrack = async (req: Request, res: Response) => {
     try {
         const { trackId } = req.params;
 
+        const tracksSearched = await prismaClient.favourites.findMany({
+            where: {
+                track: {
+                    id: trackId
+                }
+            }
+        })
+        tracksSearched.forEach(async (track) => {
+            await prismaClient.favourites.delete({
+                where: {
+                    id: track.id
+                }
+            })
+        })
+
         const targetTrack = await prismaClient.tracks.delete({
             where: {
                 id: trackId
             }
         })
+
+
         if (!targetTrack) {
             res.status(404).send('Track not found')
             return;
@@ -437,6 +454,7 @@ export const deleteTrack = async (req: Request, res: Response) => {
         await deleteImageMedia(targetTrack.imageId);
         res.status(200).send('Track deleted successfully')
     } catch (error) {
+        console.log(error);
         res.status(500).send(error)
     }
 }

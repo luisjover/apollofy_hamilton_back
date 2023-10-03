@@ -161,7 +161,32 @@ export const deleteFavourites = async (req: Request, res: Response) => {
 
 export const getAllFavourites = async (req: Request, res: Response) => {
     try {
-        const favourites = await prismaClient.favourites.findMany();
+        const favourites = await prismaClient.favourites.findMany({
+            include: {
+                artist: true,
+                track: true,
+                playlist: true
+            }
+        });
+        res.status(200).send(favourites)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
+
+export const getFavouriteById = async (req: Request, res: Response) => {
+    const { favouriteId } = req.params
+    try {
+        const favourites = await prismaClient.favourites.findUnique({
+            where: {
+                id: favouriteId
+            },
+            include: {
+                artist: true,
+                track: true,
+                playlist: true
+            }
+        });
         res.status(200).send(favourites)
     } catch (error) {
         res.status(500).send(error)

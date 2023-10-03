@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createFavourites, deleteFavourites, getAllFavourites } from "../controllers/favourites.controllers";
+import { createFavourites, deleteFavourites, getAllFavourites, getFavouriteById } from "../controllers/favourites.controllers";
 
 
 
@@ -9,3 +9,4 @@ favouritesRouter
     .post("/:userId", createFavourites)
     .delete("/:favouriteId/:userId", deleteFavourites)
     .get("/", getAllFavourites)
+    .get("/:favouriteId", getFavouriteById)
