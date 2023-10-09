@@ -117,8 +117,7 @@ model Tracks {
   id           String      @id @default(auto()) @map("_id") @db.ObjectId
   name         String
   imageUrl     String
-  // ERROR ON FIELDS!!
-  artists      Artists[]   @relation(fields: [playlistIds], references: [id])
+  artists      Artists[]   @relation(fields: [artistsIds], references: [id])
   artistsIds   String[]    @db.ObjectId
   likes        Int
   genresId     String[]    @db.ObjectId
