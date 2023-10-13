@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
-import { deleteImageMedia, uploadCover } from "../utils/cloudinary";
+import { deleteAudioMedia, deleteImageMedia, uploadCover } from "../utils/cloudinary";
 import fs from 'fs-extra'
 import { adminIdentifier } from "../config/config";
+import { deleteTrack } from "./tracks.controllers";
 
 export const createAlbumByAdmin = async (req: Request, res: Response) => {
     let imageId: string | null = null;
@@ -232,11 +233,44 @@ export const updateAlbum = async (req: Request, res: Response) => { }
 export const deleteAlbum = async (req: Request, res: Response) => {
     const { albumId } = req.params
     try {
-        const albumToDelete = await prismaClient.albums.delete({
+        const album = await prismaClient.albums.findFirst({
+            where: {
+                id: albumId
+            },
+            include: { tracks: true }
+        })
+
+        album?.tracks.forEach(async (track) => {
+            const favouritesSearched = await prismaClient.favourites.findMany({
+                where: {
+                    track: {
+                        id: track.id
+                    }
+                }
+            })
+            favouritesSearched.forEach(async (favourite) => {
+                await prismaClient.favourites.delete({
+                    where: {
+                        id: favourite.id
+                    }
+                })
+            })
+
+            const targetTrack = await prismaClient.tracks.delete({
+                where: {
+                    id: track.id
+                }
+            })
+            await deleteAudioMedia(targetTrack.audioId);
+            await deleteImageMedia(targetTrack.imageId);
+        })
+
+        const deletedAlbum = await prismaClient.albums.delete({
             where: {
                 id: albumId
             }
         })
+
         res.status(204).send("Album deleted successfully.")
     } catch (error) {
         res.status(500).send(error)
