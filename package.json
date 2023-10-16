@@ -7,8 +7,9 @@
     "test": "jest --watchAll --collectCoverage",
     "dev": "nodemon --watch ./src/**/*.ts --exec ts-node ./src/index.ts",
     "devz": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "build": "rimraf dist && tsc",
-    "start": "npm run build && node dist/index.js"
+    "build": "rimraf ./dist && tsc",
+    "start": "tsc && node ./dist/index.js",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
