@@ -14,7 +14,7 @@ describe("Given a createTrack function", () => {
                 name: "Jose Luis",
                 email: "joseluis@getMaxListeners.com"
             };
-            prismaMock.tracks.create.mockResolvedValue(user);
+            // prismaMock.tracks.create.mockResolvedValue(user);
         });
     });
 });
