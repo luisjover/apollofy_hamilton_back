@@ -48,7 +48,6 @@ export const createPlayListsByAdmin = async (req: Request, res: Response) => {
         }
     } catch (error) {
         if (imageId) deleteImageMedia(imageId);
-
         res.status(500).send(error);
     }
 }
@@ -200,7 +199,6 @@ export const deletePlayListById = async (req: Request, res: Response) => {
         })
         res.status(204).send("Playlist deleted successfully");
     } catch (error) {
-        console.log(error);
         res.status(500).send(error);
     }
 }

@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import prismaClient from "../db/clientPrisma";
 
 export const createUser = async (req: Request, res: Response) => {
-
     const { userName, email, imageUrl } = req.body;
 
     try {
@@ -45,13 +44,13 @@ export const createUser = async (req: Request, res: Response) => {
         res.status(200).send(user)
 
     } catch (error) {
-        console.log(error);
         res.status(500).send(error)
     }
 }
 //----------------------------------------------------------------------------
 
 export const getAllUsers = async (req: Request, res: Response) => {
+
     try {
         const users = await prismaClient.users.findMany({
             include: {
@@ -81,7 +80,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
         res.status(200).send(users)
     } catch (error) {
-        console.log(error);
         res.status(500).send(error);
     }
 }
@@ -255,7 +253,6 @@ export const deleteUser = async (req: Request, res: Response) => {
 
         res.status(200).send('User deleted successfully')
     } catch (error) {
-        console.log(error);
         res.status(500).send(error)
     }
 }
