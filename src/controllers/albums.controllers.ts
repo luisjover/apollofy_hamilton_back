@@ -239,6 +239,13 @@ export const deleteAlbum = async (req: Request, res: Response) => {
             },
             include: { tracks: true }
         })
+        const favourtiesWithAlbum = await prismaClient.favourites.deleteMany({
+            where: {
+                album: {
+                    id: albumId
+                }
+            }
+        })
 
         album?.tracks.forEach(async (track) => {
             const favouritesSearched = await prismaClient.favourites.findMany({
