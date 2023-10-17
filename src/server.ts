@@ -15,14 +15,14 @@ const app = express();
 
 app.use(cors());
 // Middleware to be able to read incoming requests
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "50mb" }));
 // Middleware to get info about requests
 app.use(morgan("dev"));
 
 app.use(fileUpload({
     useTempFiles: false,
     tempFileDir: "./uploads",
-    limits: { fileSize: 10000000 }, // 10MB max file(s) size
+    limits: { fileSize: 50000000 }, // 10MB max file(s) size
     abortOnLimit: true // default: false (if true, files will not be uploaded and an error event will be emitted)
 }));
 

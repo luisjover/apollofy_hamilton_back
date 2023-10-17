@@ -224,7 +224,6 @@ export const createTrack = async (req: Request, res: Response) => {
         if (imageId) deleteImageMedia(imageId);
         if (audioId) deleteAudioMedia(audioId);
 
-        console.log(error)
         res.status(500).send(error);
     }
 }
