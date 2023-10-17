@@ -14,12 +14,33 @@ export const uploadTrack = async (path: string) => {
         resource_type: "video"
     })
 }
+
+export const uploadAudioBase64 = async (audio: string) => {
+    return await cloudinary.uploader.upload(`data:video;base64,${audio}`, {
+        resource_type: 'video',
+        folder: 'tracks',
+        overwrite: true
+    })
+}
+
 export const uploadCover = async (path: any) => {
     return await cloudinary.uploader.upload(path, {
         folder: 'covers',
         transformation: [{ height: 260, width: 260, crop: "fill" }]
     })
 }
+
+
+export const uploadImageBase64 = async (image: string) => {
+    return await cloudinary.uploader.upload(`data:image/png;base64,${image}`, {
+        resource_type: 'image',
+        folder: 'covers',
+        overwrite: true,
+        transformation: [{ height: 260, width: 260, crop: "fill" }]
+    })
+}
+
+
 export const deleteAudioMedia = async (publicId: any) => {
 
     const result = await cloudinary.uploader.destroy(publicId, {
