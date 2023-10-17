@@ -239,13 +239,6 @@ export const deleteAlbum = async (req: Request, res: Response) => {
             },
             include: { tracks: true }
         })
-        const favourtiesWithAlbum = await prismaClient.favourites.deleteMany({
-            where: {
-                album: {
-                    id: albumId
-                }
-            }
-        })
 
         album?.tracks.forEach(async (track) => {
             const favouritesSearched = await prismaClient.favourites.findMany({
@@ -270,6 +263,22 @@ export const deleteAlbum = async (req: Request, res: Response) => {
             })
             await deleteAudioMedia(targetTrack.audioId);
             await deleteImageMedia(targetTrack.imageId);
+        })
+
+        const favourtiesWithAlbum = await prismaClient.favourites.findMany({
+            where: {
+                album: {
+                    id: albumId
+                }
+            }
+        })
+
+        favourtiesWithAlbum.forEach(async (favourite) => {
+            await prismaClient.favourites.delete({
+                where: {
+                    id: favourite.id
+                }
+            })
         })
 
         const deletedAlbum = await prismaClient.albums.delete({
