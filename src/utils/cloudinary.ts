@@ -16,7 +16,7 @@ export const uploadTrack = async (path: string) => {
 }
 
 export const uploadAudioBase64 = async (audio: string) => {
-    return await cloudinary.uploader.upload(`data:video;base64,${audio}`, {
+    return await cloudinary.uploader.upload(`data:video/mp3;base64,${audio}`, {
         resource_type: 'video',
         folder: 'tracks',
         overwrite: true
