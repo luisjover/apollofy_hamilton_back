@@ -1,5 +1,7 @@
-import { createTrack, updateTrack, deleteTrack, getAllTracks, getTrackById } from "../controllers/tracks.controllers";
-import { prismaMock } from "../mocks/prisma.mock";
+
+import { Request, Response } from "express";
+import { createUser } from "../controllers/users.controllers";
+import prismaClientMock from "../mocks/prisma.mock";
 
 
 //Given, when, (and), then
@@ -10,11 +12,35 @@ describe("Given a createTrack function", () => {
         test("then should resolve with the given object", async () => { // Added 'async' keyword to use await
             // Arrange
             const user = {
-                id: 1,
-                name: "Jose Luis",
-                email: "joseluis@getMaxListeners.com"
-            };
-            // prismaMock.tracks.create.mockResolvedValue(user);
+                name: "",
+                email: "",
+                imageUrl: ""
+            }
+            const res: Partial<Response> = {
+                status: jest.fn().mockReturnThis(),
+                send: jest.fn()
+            }
+            const req: Request = {
+                params: { userId: '1' },
+                body: {
+                    userName: 'Jorge',
+                    userEmail: 'jorget@test.com'
+                },
+                files: {
+                    userImage: {
+                        tempFilePath: '/path/to/temp/image.png',
+                        name: 'image.png',
+                        mv: (destination: string, callback: (err?: Error) => void) => {
+                            // Implement the mv function as needed
+                        },
+                        encoding: 'utf-8',
+                        mimetype: 'image/png',
+                    }
+                }
+            } as unknown as Request
+            // await createUser(req, res)
+
+            expect(prismaClientMock.users.create).toHaveBeenCalled();
         });
     });
 });
