@@ -1,6 +1,8 @@
 
 import { Request, Response } from "express";
 import { prismaMock } from "../mocks/prisma.mock";
+import { createTrack, createTrackByAdmin } from "../controllers/tracks.controllers";
+import { adminIdentifier } from "../config/config";
 
 
 //Given, when, (and), then
@@ -8,38 +10,120 @@ import { prismaMock } from "../mocks/prisma.mock";
 
 describe("Given a createTrack function", () => {
     describe("when createTrack is called with a valid data", () => {
-        test("then should resolve with the given object", async () => { // Added 'async' keyword to use await
-            // Arrange
-            const user = {
-                name: "",
-                email: "",
-                imageUrl: ""
-            }
-            const res: Partial<Response> = {
-                status: jest.fn().mockReturnThis(),
-                send: jest.fn()
-            }
+        // Arrange
+        const user = {
+            id: "3674537864gew6",
+            userName: "hamilton",
+            email: "aithamiltonteam@gmail.com",
+            imageUrl: "hg123.png",
+            createdAt: new Date(Date.now()),
+            updatedAt: new Date(Date.now()),
+            trackList: [""],
+            favourites: [""],
+            usersId: "",
+            playlists: [""],
+            albums: [""],
+            listType: "",
+            followers: [""],
+            followersIds: [""],
+            following: [""],
+            followingIds: [""]
+        }
+        const album = {
+            id: "12343kjhb76r439",
+            name: "new album",
+            genres: [""],
+            owner: user,
+            imageUrl: "1i23yurg678.png",
+            imageId: "325314",
+            popularity: 123,
+            privacity: false,
+            verified: false,
+            artistId: [""],
+            artists: [""],
+            tracks: [""],
+            listType: "album",
+            isTopTrend: false,
+            usersId: "kjh23r",
+            favourites: {},
+            favouritesId: "fu4iu"
+        }
+        const track = {
+            id: "652da0f28b2e7d3586c8ef64",
+            name: "hamilton",
+            imageUrl: "https://example.com/mock-image-url.jpg",
+            artists: [""],
+            artistsIds: [""],
+            likes: 2143,
+            genresId: [""],
+            genres: ["pop"],
+            audioUrl: "https://res.cloudinary.com/dmeh7kzjm/video/upload/v1697495893/tracks/iwkqbmtwlhhvedmorbzq.mp3",
+            verified: false,
+            privacity: false,
+            duration: 123,
+            imageId: "1234",
+            audioId: "123443",
+            album: {},
+            albumsId: "2443",
+            user: user,
+            userId: "1234e",
+            playlists: [""],
+            playlistIds: [""],
+            listType: "",
+            favourites: {},
+            favouritesId: "124"
+        }
+        const res: Partial<Response> = {
+            status: jest.fn().mockReturnThis(),
+            send: jest.fn(),
+            json: jest.fn()
+        }
+
+
+        test("it should give a 404 status when missing audio or image", async () => {
             const req: Request = {
-                params: { userId: '1' },
+                params: { userId: "3674537864gew6" },
                 body: {
-                    userName: 'Jorge',
-                    userEmail: 'jorget@test.com'
-                },
-                files: {
-                    userImage: {
-                        tempFilePath: '/path/to/temp/image.png',
-                        name: 'image.png',
-                        mv: (destination: string, callback: (err?: Error) => void) => {
-                            // Implement the mv function as needed
-                        },
-                        encoding: 'utf-8',
-                        mimetype: 'image/png',
-                    }
+                    name: "hamilton",
+                    genres: "pop",
+                    privacityString: "false",
+                    playlists: "",
+                    albumName: ""
                 }
             } as unknown as Request
-            // await createUser(req, res)
+            expect(track).toBeDefined();
+            prismaMock.tracks.create.mockResolvedValue(track)
+            await createTrack(req, res as any);
+            expect(res.status).toHaveBeenCalledWith(404)
+        })
 
-            // expect(prismaClientMock.users.create).toHaveBeenCalled();
+        test("then should resolve with the given object", async () => {
+            const req: Request = {
+                params: { userId: "3674537864gew6" },
+                body: {
+                    name: "hamilton",
+                    genres: "pop",
+                    privacityString: "false",
+                    playlists: "",
+                    albumName: "",
+                    audio: "https://res.cloudinary.com/dmeh7kzjm/video/upload/v1697495893/tracks/iwkqbmtwlhhvedmorbzq.mp3",
+                    image: "https://example.com/mock-image-url.jpg"
+                }
+            } as unknown as Request
+
+
+
+            expect(track).toBeDefined();
+
+            prismaMock.tracks.create.mockResolvedValue(track)
+            prismaMock.users.findUnique.mockResolvedValue(user)
+            prismaMock.albums.create.mockResolvedValue(album)
+            prismaMock.albums.findFirst.mockResolvedValue(album)
+
+            await createTrack(req, res as any);
+            expect(res.status).toHaveBeenCalledWith(201)
+            expect(res.send).toHaveBeenCalled();
+
         });
     });
 });

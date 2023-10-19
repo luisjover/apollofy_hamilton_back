@@ -3,7 +3,6 @@ import prismaClient from "../db/clientPrisma";
 import { uploadCover, uploadTrack, deleteImageMedia, deleteAudioMedia, uploadImageBase64, uploadAudioBase64 } from "../utils/cloudinary";
 import fs from 'fs-extra'
 import { adminIdentifier } from "../config/config";
-import { Albums, Tracks } from "@prisma/client";
 
 
 export const createTrack = async (req: Request, res: Response) => {
@@ -213,7 +212,7 @@ export const createTrack = async (req: Request, res: Response) => {
                         }
                     }
                 })
-                res.status(200).send(user)
+                res.status(201).send(user)
             } else {
                 res.status(404).send("error uploading audio or image");
             }
