@@ -3,7 +3,6 @@ import prismaClient from "../db/clientPrisma";
 import { deleteAudioMedia, deleteImageMedia, uploadCover } from "../utils/cloudinary";
 import fs from 'fs-extra'
 import { adminIdentifier } from "../config/config";
-import { deleteTrack } from "./tracks.controllers";
 
 export const createAlbumByAdmin = async (req: Request, res: Response) => {
     let imageId: string | null = null;

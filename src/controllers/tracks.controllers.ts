@@ -454,7 +454,7 @@ export const deleteTrack = async (req: Request, res: Response) => {
 
         await deleteAudioMedia(targetTrack.audioId);
         await deleteImageMedia(targetTrack.imageId);
-        res.status(200).send('Track deleted successfully')
+        res.status(204).send('Track deleted successfully')
     } catch (error) {
         res.status(500).send(error)
     }

@@ -1,14 +1,14 @@
 
 import { Request, Response } from "express";
 import { prismaMock } from "../mocks/prisma.mock";
-import { createTrack, deleteTrack } from "../controllers/tracks.controllers";
+import { deleteAlbum } from "../controllers/albums.controllers";
 
 
 //Given, when, (and), then
 //Arrange, act, assert
 
-describe("Given a createTrack function", () => {
-    describe("when createTrack is called with a valid data", () => {
+describe("Given a createAlbum function", () => {
+    describe("when createAlbum is deleted", () => {
         // Arrange
         const user = {
             id: "3674537864gew6",
@@ -87,69 +87,26 @@ describe("Given a createTrack function", () => {
             send: jest.fn(),
             json: jest.fn()
         }
-
-
-        test("it should give a 404 status when missing audio or image", async () => {
-            const req: Request = {
-                params: { userId: "3674537864gew6" },
-                body: {
-                    name: "hamilton",
-                    genres: "pop",
-                    privacityString: "false",
-                    playlists: "",
-                    albumName: ""
-                }
-            } as unknown as Request
-
-
-            expect(track).toBeDefined();
-            prismaMock.tracks.create.mockResolvedValue(track)
-            await createTrack(req, res as any);
-            expect(res.status).toHaveBeenCalledWith(404)
-        })
-
         test("then should resolve with the given object", async () => {
+
+            const res: Partial<Response> = {
+                status: jest.fn().mockReturnThis(),
+                send: jest.fn(),
+                json: jest.fn()
+            }
             const req: Request = {
-                params: { userId: "3674537864gew6" },
-                body: {
-                    name: "hamilton",
-                    genres: "pop",
-                    privacityString: "false",
-                    playlists: "",
-                    albumName: "",
-                    audio: "https://res.cloudinary.com/dmeh7kzjm/video/upload/v1697495893/tracks/iwkqbmtwlhhvedmorbzq.mp3",
-                    image: "https://example.com/mock-image-url.jpg"
-                }
+                params: { albumId: "234i7tv43" }
             } as unknown as Request
 
-            expect(track).toBeDefined();
-
-            prismaMock.tracks.create.mockResolvedValue(track)
-            prismaMock.users.findUnique.mockResolvedValue(user)
-            prismaMock.albums.create.mockResolvedValue(album)
             prismaMock.albums.findFirst.mockResolvedValue(album)
-
-            await createTrack(req, res as any);
-            expect(res.status).toHaveBeenCalledWith(201)
-            expect(res.send).toHaveBeenCalled();
-
-        });
-
-        test("then should resolve with status 204 after deleting track", async () => {
-            const req: Request = {
-                params: { userId: "3674537864gew6" }
-            } as unknown as Request
-
-            expect(track).toBeDefined();
-
-            prismaMock.favourites.delete.mockResolvedValue(favourites)
+            prismaMock.albums.delete.mockResolvedValue(album)
             prismaMock.favourites.findMany.mockResolvedValue([favourites])
+            prismaMock.favourites.delete.mockResolvedValue(favourites)
             prismaMock.tracks.delete.mockResolvedValue(track)
 
-            await deleteTrack(req, res as any);
-
-            expect(res.status).toHaveBeenCalledWith(204)
-            expect(res.send).toHaveBeenCalledWith("Track deleted successfully");
-        })
+            await deleteAlbum(req, res as any)
+            expect(res.status).toHaveBeenCalledWith(204);
+            expect(res.send).toHaveBeenCalled();
+        });
     });
 });
