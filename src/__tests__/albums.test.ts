@@ -87,7 +87,7 @@ describe("Given a createAlbum function", () => {
             send: jest.fn(),
             json: jest.fn()
         }
-        test("then should resolve with the given object", async () => {
+        test("then should resolve with status 204", async () => {
 
             const res: Partial<Response> = {
                 status: jest.fn().mockReturnThis(),

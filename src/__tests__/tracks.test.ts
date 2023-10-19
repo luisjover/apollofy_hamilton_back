@@ -108,7 +108,7 @@ describe("Given a createTrack function", () => {
             expect(res.status).toHaveBeenCalledWith(404)
         })
 
-        test("then should resolve with the given object", async () => {
+        test("then should resolve with 201 if created successfully", async () => {
             const req: Request = {
                 params: { userId: "3674537864gew6" },
                 body: {

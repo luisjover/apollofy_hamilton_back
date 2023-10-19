@@ -10,7 +10,7 @@ import { createUser } from "../controllers/users.controllers";
 describe("Given a createUser function", () => {
     describe("when createUser is called with a valid data", () => {
 
-        test("then should resolve with the given object", async () => {
+        test("then should resolve with status 201 if created successfully", async () => {
 
             // Arrange
             const user = {
