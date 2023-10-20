@@ -39,13 +39,12 @@ describe("Given a createUser function", () => {
             }
             const req: Request = {
                 body: {
-                    userName: 'Jorge',
-                    email: 'jorget@test.com',
+                    userName: 'hamilton',
+                    email: 'aithamiltonteam@gmail.com',
                     imageUrl: "hola.png"
                 }
             } as unknown as Request
 
-            expect(user).toBeDefined();
             prismaMock.users.create.mockResolvedValue(user)
 
             await createUser(req, res as any)

@@ -102,7 +102,6 @@ describe("Given a createTrack function", () => {
             } as unknown as Request
 
 
-            expect(track).toBeDefined();
             prismaMock.tracks.create.mockResolvedValue(track)
             await createTrack(req, res as any);
             expect(res.status).toHaveBeenCalledWith(404)
@@ -122,7 +121,6 @@ describe("Given a createTrack function", () => {
                 }
             } as unknown as Request
 
-            expect(track).toBeDefined();
 
             prismaMock.tracks.create.mockResolvedValue(track)
             prismaMock.users.findUnique.mockResolvedValue(user)
@@ -140,7 +138,6 @@ describe("Given a createTrack function", () => {
                 params: { userId: "3674537864gew6" }
             } as unknown as Request
 
-            expect(track).toBeDefined();
 
             prismaMock.favourites.delete.mockResolvedValue(favourites)
             prismaMock.favourites.findMany.mockResolvedValue([favourites])
